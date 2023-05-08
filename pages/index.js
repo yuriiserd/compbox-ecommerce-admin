@@ -7,6 +7,6 @@ export default function Home() {
   const {data: session} = useSession()
 
  return <Layout>
-    Hello, this is future content
+    Hello HomePage
  </Layout>
 }
