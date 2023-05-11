@@ -2,6 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
 import { useRouter } from "next/router";
+import logo from "@/public/logo.svg";
+import logoText from "@/public/logo-text.svg";
 
 export default function Nav() {
   const inactiveLink = 'flex py-2 gap-2 hover:gap-4 duration-200 text-stone-900 hover:text-stone-500';
@@ -13,8 +15,8 @@ export default function Nav() {
   return (
     <aside className="max-w-xs bg-stone-200 px-4 min-h-screen">
       <Link href={'/'} className="flex items-center py-5 gap-4 flex-col">
-        <Image src="logo.svg" width={55} height={55} alt="logo"/>
-        <Image src="logo-text.svg" width={202} height={34} alt="freedom fighter"/>
+        <Image src={logo} width={55} height={55} alt="logo"/>
+        <Image src={logoText} width={202} height={34} alt="freedom fighter"/>
       </Link>
       <nav>
         <Link href={'/'} className={pathname === '/' ? activeLink : inactiveLink}>
