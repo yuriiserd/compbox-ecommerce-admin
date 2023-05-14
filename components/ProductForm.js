@@ -75,7 +75,7 @@ export default function ProductForm({
           value={price}
           onChange={(e) => setPrice(e.target.value)}
           />
-        <button type="submit" className="btn-primary self-end">{_id ? 'Save' : 'Add Product'}</button>
+        <button type="submit" className="btn self-end">{_id ? 'Save' : 'Add Product'}</button>
       </form>
       
     </>
