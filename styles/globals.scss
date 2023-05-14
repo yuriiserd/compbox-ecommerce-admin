@@ -17,11 +17,14 @@ label {
   @apply mb-2 text-stone-600;
   display: block;
 }
-.btn-primary {
-  @apply bg-stone-300 text-stone-900 py-1 px-4 rounded-md
+.btn {
+  @apply bg-stone-300 text-stone-900 py-1 px-4 rounded-md;
+  &_red {
+    @apply bg-red-800 text-white
+  }
 } 
 .product-preview {
-  @apply border-b border-stone-300 p-2 py-3;
+  @apply border-r border-b border-stone-200 p-2 py-3;
 }
 .product-preview td{
   @apply p-2 border
@@ -34,4 +37,31 @@ table.default thead tr {
 }
 table.default thead tr td{
   @apply p-2
+}
+
+.popup {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(#333, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  visibility: hidden;
+  opacity: 0;
+  transition: 0.3s;
+  &.open {
+    visibility: visible;
+    opacity: 1;
+  }
+}
+.popup__content {
+  background: #ffffff;
+  padding: 40px 60px;
+  text-align: center;
+  max-width: 400px;
+  border-radius: 10px;
+  box-shadow: 5px 5px 20px rgba(#000, 0.3);
 }
