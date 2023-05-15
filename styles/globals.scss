@@ -65,3 +65,30 @@ table.default thead tr td{
   border-radius: 10px;
   box-shadow: 5px 5px 20px rgba(#000, 0.3);
 }
+
+.form {
+  @apply flex gap-4 flex-wrap;
+  &>div {
+    width: 48%;
+    @media (max-width: 992px) {
+      width: 100%;
+    }
+  }
+  &>div:last-child {
+    @media (max-width: 992px) {
+      order: -1;
+    }
+  }
+}
+
+.upload {
+  svg {
+    @apply transition-all duration-200
+  }
+  @apply cursor-pointer w-24 h-24 border flex items-center justify-center border-stone-200 rounded-lg text-green-700;
+  &:hover {
+    svg {
+      @apply w-10 h-10
+    }
+  }
+}
