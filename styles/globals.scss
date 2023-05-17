@@ -85,7 +85,7 @@ table.default thead tr td{
   svg {
     @apply transition-all duration-200
   }
-  @apply cursor-pointer w-24 h-24 border flex items-center justify-center border-stone-200 rounded-lg text-green-700;
+  @apply cursor-pointer w-24 h-24 border-2 flex items-center justify-center border-stone-200 rounded-lg text-green-700;
   &:hover {
     svg {
       @apply w-10 h-10
