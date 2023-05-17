@@ -1,27 +1,32 @@
 import { Editor } from "@tinymce/tinymce-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/router";
+import Image from "next/image";
+import Spinner from "./Spinner";
+
 
 export default function ProductForm({
   _id,
   title: existingTitle, 
   description: existingDescription,
   price: existingPrice,
-  images
+  images: existingImages
 }) {
 
   const [title, setTitle] = useState(existingTitle || '');
   const [description, setDescription] = useState(existingDescription || '');
   const [price, setPrice] = useState(existingPrice || '');
+  const [images, setImages] = useState(existingImages || []);
 
   const [goToProducts, setGoToProducts] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
   const router = useRouter()
 
   async function saveProduct(e) {
     e.preventDefault();
-    const data = {title, description, price};
+    const data = {title, description, price, images};
     if (_id) {
       await axios.put('/api/products', {...data, _id});
     } else {
@@ -36,8 +41,20 @@ export default function ProductForm({
 
   const editorRef = useRef(null);
 
-  function uploadImages(e) {
-    console.log(e);
+  async function uploadImages(e) {
+    const files = e.target?.files;
+    if (files?.length > 0) {
+      setIsUploading(true);
+      const data = new FormData();
+      for (const file of files) {
+        data.append('file', file);
+      }
+      const res = await axios.post('/api/upload', data);
+      setImages(oldImages => {
+        return [...oldImages, ...res.data.links]
+      });
+      setIsUploading(false);
+    }
   }
   
   return (
@@ -85,7 +102,15 @@ export default function ProductForm({
         </div>
         <div>
           <label>Images</label>
-          <div>
+          <div className="flex flex-wrap gap-2">
+            {!!images?.length && images.map(link => (
+              <div key={link}>
+                <Image src={link} className="rounded-lg object-cover h-24 w-24" width={96} height={96} alt={`image`}/>
+              </div>
+            ))}
+            {isUploading && (
+              <Spinner/>
+            )}
             <label className="upload">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
