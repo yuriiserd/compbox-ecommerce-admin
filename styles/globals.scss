@@ -18,9 +18,15 @@ label {
   display: block;
 }
 .btn {
-  @apply bg-stone-300 text-stone-900 py-1 px-4 rounded-md;
+  @apply bg-stone-700 text-stone-200 py-1 px-4 rounded-md transition-all;
+  &:hover {
+    @apply bg-stone-600 text-stone-100
+  }
   &_red {
-    @apply bg-red-800 text-white
+    @apply bg-red-800 text-white;
+    &:hover {
+      @apply bg-red-700
+    }
   }
 } 
 .product-preview {
@@ -67,14 +73,14 @@ table.default thead tr td{
 }
 
 .form {
-  @apply flex gap-4 flex-wrap;
+  @apply flex gap-4 flex-wrap relative;
   &>div {
     width: 48%;
     @media (max-width: 992px) {
       width: 100%;
     }
   }
-  &>div:last-child {
+  &>.images {
     @media (max-width: 992px) {
       order: -1;
     }
@@ -89,6 +95,25 @@ table.default thead tr td{
   &:hover {
     svg {
       @apply w-10 h-10
+    }
+  }
+}
+
+.image-preview {
+  position: relative;
+  .delete {
+    position: absolute;
+    visibility: hidden;
+    right: 0;
+    top: 0;
+    cursor: pointer;
+    background-color: #ffffff;
+    
+    @apply text-red-600 rounded-bl-lg
+  }
+  &:hover {
+    .delete {
+      visibility: visible;
     }
   }
 }
