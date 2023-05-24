@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import classNames from "classnames";
+import Spinner from "@/components/Spinner";
 
 
 export default function Products() {
@@ -39,6 +40,11 @@ export default function Products() {
           </tr>
         </thead>
         <tbody>
+          {!products.length && (
+            <tr>
+              <td><Spinner/></td>
+            </tr>
+          )}
           {products.map(product => (
             <tr key={product._id} className="product-preview">
               <td>{product.title}</td>
