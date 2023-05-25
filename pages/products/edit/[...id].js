@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import ProductForm from "@/components/ProductForm";
+import Back from "@/components/Back";
 
 export default function EditProductPage() {
   const [productInfo, setProductInfo] = useState(null);
@@ -18,7 +19,10 @@ export default function EditProductPage() {
   }, [id]); 
   return (
     <Layout>
-      <h1>Edit Product</h1>
+      <h1 className="flex items-center gap-4">
+        <Back to={"/products/"}/>
+        Edit Product
+      </h1>
       {productInfo && (
         <ProductForm {...productInfo}/>
       )}
