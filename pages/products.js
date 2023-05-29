@@ -47,7 +47,7 @@ export default function Products() {
             </tr>
           )}
           {products.map(product => (
-            <tr key={product._id} className="product-preview">
+            <tr key={product._id} className="table-row">
               <td>{product.title}</td>
               <td className="hidden md:table-cell">{product._id}</td>
               <td><strong>{product.price}</strong></td>
