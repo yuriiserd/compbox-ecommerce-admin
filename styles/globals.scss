@@ -18,7 +18,7 @@ label {
   display: block;
 }
 .btn {
-  @apply bg-stone-700 text-stone-200 py-1 px-4 rounded-md transition-all;
+  @apply bg-stone-700 text-white py-1 px-4 rounded-md transition-all;
   &:hover {
     @apply bg-stone-600 text-stone-100
   }
@@ -28,11 +28,14 @@ label {
       @apply bg-red-700
     }
   }
+  &:disabled {
+    @apply bg-stone-400 
+  }
 } 
-.product-preview {
+.table-row {
   @apply border-r border-b border-stone-200 p-2 py-3;
 }
-.product-preview td{
+.table-row td{
   @apply p-2 border
 }
 table.default {
