@@ -1,5 +1,5 @@
 import Layout from "@/components/Layout";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import Back from "@/components/Back";
 import Spinner from "@/components/Spinner";
@@ -9,19 +9,16 @@ import Error from "@/components/Error";
 export default function Categories() {
 
   const [name, setName] = useState('');
-  const [nameError, setNameError] = useState(false);
   const [parent, setParent] = useState('');
+  const [nameError, setNameError] = useState(false);
   const [parentError, setParentError] = useState(false);
   const [isVisibleChoseList, setisVisibleChoseList] = useState(false);
   const [categories, setCategories] = useState([]);
   const [filteredCategories, setFilteredCategories] = useState();
 
-  const submitRef = useRef(null);
-
   useEffect(() => {
     updateCategories();
   }, [])
-
 
   function updateCategories() {
     axios.get('/api/categories').then(res => {
@@ -30,14 +27,14 @@ export default function Categories() {
     })
   }
 
-  function filterCategories(text) {
-    text = text.toLowerCase();
+  function filterCategories(target) {
+    target = target.toLowerCase();
     setFilteredCategories(() => {
       const filtered = [];
       categories.forEach(cat => {
         let {name} = cat;
         name = name.toLowerCase();
-        if (name.includes(text)) {
+        if (name.includes(target)) {
           filtered.push(cat)
         }
       })
@@ -56,21 +53,22 @@ export default function Categories() {
   }
 
   function validateError() {
+
     if (validateCat(name)) {
       setNameError(true)
     } else {
       setNameError(false)
     }
-    if (validateCat(parent)) {
-      setParentError(false)
-    } else {
+    if (!validateCat(parent) && parent !== '') {
       setParentError(true)
+    } else {
+      setParentError(false)
     }
   }
 
   async function saveCategory(e) {
     e.preventDefault();
-    if (validateError) return
+    if (validateCat(name) && !validateCat(parent)) return;
     const data = {name};
 
     if (validateCat(parent)) {
@@ -86,7 +84,7 @@ export default function Categories() {
 
   return (
     <div onClick={(ev) => {
-      if (ev.target.id !== 'dropdown-cat' && ev.target.id !== 'dropdown-input') {
+      if (ev.target.getAttribute('data-dropdown')) {
         setisVisibleChoseList(false)
       }
     }}> {/* Wrapper for handle Parent Category dropdown */}
@@ -122,9 +120,9 @@ export default function Categories() {
                   className="mb-0 mr-0"
                   type="text"
                   placeholder="Parent Category"
-                  id="dropdown-input"
-                  onFocus={() => setisVisibleChoseList(true)}
+                  data-dropdown
                   onChange={ev => {
+                    setisVisibleChoseList(true)
                     if (parentError) {
                       validateError()
                     }
@@ -133,18 +131,26 @@ export default function Categories() {
                   }}
                   value={parent}
                 />
+                <button className="" data-dropdown onClick={(e) => {
+                  e.preventDefault();
+                  setisVisibleChoseList(!isVisibleChoseList);
+                }}>
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                  </svg>
+                </button>
                 {parentError && (
                   <Error message={"Please use existing category"}/>
                 )}
                 {isVisibleChoseList && !!filteredCategories.length && (
-                  <ul id="dropdown-cat" className="absolute bottom-0 left-0 right-0 h-60 overflow-y-scroll translate-y-full bg-stone-200 rounded-md px-2 pt-2">
+                  <ul data-dropdown className="absolute bottom-0 left-0 right-0 h-60 overflow-y-scroll translate-y-full bg-stone-200 rounded-md px-2 pt-2">
                     {filteredCategories.map(category => (
                       <li 
                         className="border-b pb-1 pt-1 last:border-none border-stone-300 cursor-pointer" 
                         key={category._id}
                         onClick={() => {
                           setParent(category.name);
-                          submitRef.current.focus();
+                          setisVisibleChoseList(false)
                         }}
                       >{category.name}</li>
                     ))}
@@ -152,7 +158,6 @@ export default function Categories() {
                 )}
               </label>
               <button 
-                ref={submitRef} 
                 onFocus={() => setisVisibleChoseList(false)} 
                 onClick={validateError}
                 type="submit" 
