@@ -5,6 +5,7 @@ import Back from "@/components/Back";
 import Spinner from "@/components/Spinner";
 import Link from "next/link";
 import Error from "@/components/Error";
+import classNames from "classnames";
 
 export default function Categories() {
 
@@ -12,7 +13,7 @@ export default function Categories() {
   const [parent, setParent] = useState('');
   const [nameError, setNameError] = useState(false);
   const [parentError, setParentError] = useState(false);
-  const [isVisibleChoseList, setisVisibleChoseList] = useState(false);
+  const [isVisibleDropdown, setisVisibleDropdown] = useState(false);
   const [categories, setCategories] = useState([]);
   const [filteredCategories, setFilteredCategories] = useState();
 
@@ -54,7 +55,7 @@ export default function Categories() {
 
   function validateError() {
 
-    if (validateCat(name)) {
+    if (validateCat(name) || name === '') {
       setNameError(true)
     } else {
       setNameError(false)
@@ -68,7 +69,7 @@ export default function Categories() {
 
   async function saveCategory(e) {
     e.preventDefault();
-    if (validateCat(name) && !validateCat(parent)) return;
+    if ((validateCat(name) || name === '') || !validateCat(parent)) return;
     const data = {name};
 
     if (validateCat(parent)) {
@@ -78,14 +79,15 @@ export default function Categories() {
     }
 
     await axios.post('/api/categories', data);
+    console.log('work')
     setName('');
     updateCategories();
   }
 
   return (
     <div onClick={(ev) => {
-      if (ev.target.getAttribute('data-dropdown')) {
-        setisVisibleChoseList(false)
+      if (!ev.target.getAttribute('data-dropdown')) {
+        setisVisibleDropdown(false)
       }
     }}> {/* Wrapper for handle Parent Category dropdown */}
       <Layout>
@@ -110,39 +112,50 @@ export default function Categories() {
                   }}
                   value={name}
                 />
-                {nameError && (
+                {(nameError && !!name.length) && (
                   <Error message={"This category already exist"}/>
                 )}
+                {(nameError && !name.length) && (
+                  <Error message={"Please enter category name"}/>
+                )}
+
               </label>
               <label className="w-full relative">
                 <span className="mb-2 block">Parent Category</span>
-                <input
-                  className="mb-0 mr-0"
-                  type="text"
-                  placeholder="Parent Category"
-                  data-dropdown
-                  onChange={ev => {
-                    setisVisibleChoseList(true)
-                    if (parentError) {
-                      validateError()
-                    }
-                    setParent(ev.target.value);
-                    filterCategories(ev.target.value);
-                  }}
-                  value={parent}
-                />
-                <button className="" data-dropdown onClick={(e) => {
-                  e.preventDefault();
-                  setisVisibleChoseList(!isVisibleChoseList);
-                }}>
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                  </svg>
-                </button>
+                <div className="relative">
+                  <input
+                    className="mb-0 mr-0"
+                    type="text"
+                    placeholder="Parent Category"
+                    data-dropdown
+                    onChange={ev => {
+                      setisVisibleDropdown(true)
+                      if (parentError) {
+                        validateError()
+                      }
+                      setParent(ev.target.value);
+                      filterCategories(ev.target.value);
+                    }}
+                    value={parent}
+                  />
+                  <button 
+                    className={classNames('dropdown-btn', {
+                      open: isVisibleDropdown || !!filterCategories.length
+                    })} 
+                    data-dropdown
+                    onClick={(e) => {
+                    e.preventDefault();
+                    setisVisibleDropdown(!isVisibleDropdown);
+                  }}>
+                    <svg data-dropdown xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                    </svg>
+                  </button>
+                </div>
                 {parentError && (
                   <Error message={"Please use existing category"}/>
                 )}
-                {isVisibleChoseList && !!filteredCategories.length && (
+                {isVisibleDropdown && !!filteredCategories.length && (
                   <ul data-dropdown className="absolute bottom-0 left-0 right-0 h-60 overflow-y-scroll translate-y-full bg-stone-200 rounded-md px-2 pt-2">
                     {filteredCategories.map(category => (
                       <li 
@@ -150,7 +163,7 @@ export default function Categories() {
                         key={category._id}
                         onClick={() => {
                           setParent(category.name);
-                          setisVisibleChoseList(false)
+                          setisVisibleDropdown(false)
                         }}
                       >{category.name}</li>
                     ))}
@@ -158,7 +171,7 @@ export default function Categories() {
                 )}
               </label>
               <button 
-                onFocus={() => setisVisibleChoseList(false)} 
+                onFocus={() => setisVisibleDropdown(false)} 
                 onClick={validateError}
                 type="submit" 
                 className="btn"
