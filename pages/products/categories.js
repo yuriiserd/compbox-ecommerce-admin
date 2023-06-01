@@ -140,7 +140,7 @@ export default function Categories() {
                   />
                   <button 
                     className={classNames('dropdown-btn', {
-                      open: isVisibleDropdown || !!filterCategories.length
+                      open: isVisibleDropdown
                     })} 
                     data-dropdown
                     onClick={(e) => {
