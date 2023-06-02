@@ -27,6 +27,7 @@ export const deleteSlice = createSlice({
 // Action creators are generated for each case reducer function
 export const { openDelete, closeDelete, toggleDelete, setDeleteItem } = deleteSlice.actions
 
-export const selectValueDelete = (state) => state.deletePopup.value
+export const selectItemIdDelete = (state) => state.deletePopup.itemId;
+export const selectOpenPopupDelete = (state) => state.deletePopup.openPopup;
 
 export default deleteSlice.reducer
