@@ -3,17 +3,19 @@ import axios from "axios";
 import classNames from "classnames";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import Loaded from "./Loaded";
+import Loading from "./Loading";
 
 
 export default function DeletePopup({collection}) {
 
   const itemId = useSelector(selectItemIdDelete);
   const openPopup = useSelector(selectOpenPopupDelete);
+  const [loading, setLoading] = useState({
+    inProgress: false,
+    done: false
+  });
   const dispatch = useDispatch();
   const [currentItem, setcurrentItem] = useState([]);
-  
-  console.log(itemId, openPopup, currentItem);
 
   useEffect(() => {
     if (openPopup) {
@@ -24,9 +26,26 @@ export default function DeletePopup({collection}) {
   },[openPopup])
 
   async function deleteProduct(id) {
-    await axios.delete('/api/' + collection + '?id='+id).then(() => {
-      dispatch(closeDelete());
-    });
+    await axios.delete('/api/' + collection + '?id='+id).then((res) => {
+      if (res.data) {
+        setLoading(() => {
+          return {
+            inProgress: false,
+            done: true
+          }
+        })
+      }
+    }).then(() => {
+      setTimeout(() => {
+        dispatch(closeDelete())
+        setLoading(() => {
+          return {
+            inProgress: false,
+            done: false
+          }
+        })
+      }, 1500)
+    })
   }
 
   return (
@@ -35,14 +54,34 @@ export default function DeletePopup({collection}) {
         open: openPopup
       })}>
         <div className="popup__content"> 
-          {openPopup && (
-            <Loaded/>
+          {loading.inProgress && (
+            <Loading inProgress/>
           )}
-          <p>Do you whant to delete<br/> "{collection === "categories" ? currentItem?.name : currentItem?.title}"?</p>
-          <div className="flex gap-4 justify-center mt-4">
-            <button className="btn btn_red" onClick={() => deleteProduct(currentItem?._id)}>Yes</button>
-            <button className="btn" onClick={() => dispatch(closeDelete())}>No</button>
-          </div>
+          {loading.done && (
+            <Loading done/>
+          )}
+          {!loading.inProgress && !loading.done && (
+            <>
+              <p>Do you whant to delete<br/> "{collection === "categories" ? currentItem?.name : currentItem?.title}"?</p>
+              <div className="flex gap-4 justify-center mt-4">
+                <button className="btn btn_red" onClick={() => {
+                  deleteProduct(currentItem?._id);
+                  setLoading(() => {
+                    return {
+                      inProgress: true,
+                      done: false
+                    }
+                  })
+                }}>Yes</button>
+                <button className="btn" onClick={() => {
+                  dispatch(closeDelete());
+                  setTimeout(() => {
+                    setcurrentItem([])
+                  }, 300)
+                }}>No</button>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </>

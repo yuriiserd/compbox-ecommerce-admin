@@ -127,6 +127,6 @@ table.default thead tr td{
   transform-origin: center;
   outline: none;
   &.open {
-    transform: rotate(180deg);
+    transform: rotateX(180deg);
   }
 }
