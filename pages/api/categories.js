@@ -23,6 +23,8 @@ export default async function handle(req, res) {
     if (req.query?.id) {
       await Category.deleteOne({_id: req.query.id})
     }
-    res.json(true)
+    setTimeout(() => {
+      res.json(true)
+    }, 500) // just for testing loading gif 
   }
 }
