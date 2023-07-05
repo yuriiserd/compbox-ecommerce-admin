@@ -19,6 +19,8 @@ export default function Categories() {
   const [isVisibleDropdown, setisVisibleDropdown] = useState(false);
   const [categories, setCategories] = useState([]);
   const [filteredCategories, setFilteredCategories] = useState();
+  const [isEditing, setIsEditing] = useState(false);
+  const [editItem, setEditItem] = useState('');
 
   const openPopup = useSelector(selectOpenPopupDelete);
   const dispatch = useDispatch();
@@ -61,21 +63,14 @@ export default function Categories() {
 
   function validateError() {
 
-    if (validateCat(name) || name === '') {
-      setNameError(true)
-    } else {
-      setNameError(false)
-    }   //    
-    if (!validateCat(parent) && parent !== '') {
-      setParentError(true)
-    } else {
-      setParentError(false)
-    }
+    validateCat(name) || name === '' ? setNameError(true) : setNameError(false);
+
+    !validateCat(parent) && parent !== '' ? setParentError(true) : setParentError(false)
+  
   }
 
-  async function saveCategory(e) {
-    e.preventDefault();
-    if (validateCat(name) || !validateCat(parent)) return;
+  async function saveCategory() {
+    if (validateCat(name) && !validateCat(parent)) return;
     if (name === '') return;
     const data = {name};
 
@@ -85,10 +80,19 @@ export default function Categories() {
       data.parent = '';
     }
 
-    await axios.post('/api/categories', data);
+    if (isEditing) {
+      await axios.put('/api/categories', {...data, _id: editItem});
+
+      console.log('edit', data, editItem)
+    } else {
+      await axios.post('/api/categories', data);
+      console.log('post', data, editItem)
+    }
+
     setName('');
     setParent('');
     updateCategories();
+    setIsEditing(false);
   }
 
   return (
@@ -104,7 +108,11 @@ export default function Categories() {
         </h1>
         <div className="flex gap-4 flex-wrap md:flex-nowrap">
           <div className="w-full md:w-1/2">
-            <form onSubmit={saveCategory} className="flex flex-col items-end gap-2">
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              validateError();
+              saveCategory();
+            }} className="flex flex-col items-end gap-2">
               <label className="w-full">
                 <span className="mb-2 block">New Category Name</span>
                 <input
@@ -119,7 +127,7 @@ export default function Categories() {
                   }}
                   value={name}
                 />
-                {(nameError && !!name.length) && (
+                {(nameError && !!name.length && isEditing) && (
                   <Error message={"This category already exist"}/>
                 )}
                 {(nameError && !name.length) && (
@@ -179,7 +187,6 @@ export default function Categories() {
               </label>
               <button 
                 onFocus={() => setisVisibleDropdown(false)} 
-                onClick={validateError}
                 type="submit" 
                 className="btn"
               >Save</button>
@@ -205,12 +212,17 @@ export default function Categories() {
                     <td>{category.name}</td>
                     <td>{category.parent}</td>
                     <td className="flex border-none ml-2 gap-4 border-stone-200 border-r">
-                      <button className="text-stone-700">
+                      <button title="edit" onClick={() => {
+                        setName(category.name);
+                        setParent(category.parent);
+                        setIsEditing(true);
+                        setEditItem(category._id);
+                      }} className="text-stone-700">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
                         </svg>
                       </button>
-                      <button onClick={() => {
+                      <button title="delete" onClick={() => {
                         dispatch(setDeleteItem(category._id));
                         dispatch(openDelete());
                       }} className="text-stone-700">
