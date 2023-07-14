@@ -82,11 +82,8 @@ export default function Categories() {
 
     if (isEditing) {
       await axios.put('/api/categories', {...data, _id: editItem});
-
-      console.log('edit', data, editItem)
     } else {
       await axios.post('/api/categories', data);
-      console.log('post', data, editItem)
     }
 
     setName('');
@@ -114,7 +111,13 @@ export default function Categories() {
               saveCategory();
             }} className="flex flex-col items-end gap-2">
               <label className="w-full">
-                <span className="mb-2 block">New Category Name</span>
+                <span className="mb-2 block">
+                  {
+                    isEditing ? 
+                    'Edit Category "' + name + '"' :
+                    'New Category Name'
+                  }
+                </span>
                 <input
                   className="mb-0 mr-0"
                   type="text"
@@ -167,7 +170,7 @@ export default function Categories() {
                     </svg>
                   </button>
                 </div>
-                {parentError && (
+                {!!(parentError && parent?.length) && (
                   <Error message={"Please use existing category"}/>
                 )}
                 {isVisibleDropdown && !!filteredCategories.length && (
