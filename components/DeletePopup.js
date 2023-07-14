@@ -25,7 +25,7 @@ export default function DeletePopup({collection}) {
     }
   },[openPopup])
 
-  async function deleteProduct(id) {
+  async function deleteItem(id) {
     await axios.delete('/api/' + collection + '?id='+id).then((res) => {
       if (res.data) {
         setLoading(() => {
@@ -44,7 +44,7 @@ export default function DeletePopup({collection}) {
             done: false
           }
         })
-      }, 1500)
+      }, 1500) // timeout to show "item deleted" gif
     })
   }
 
@@ -65,7 +65,7 @@ export default function DeletePopup({collection}) {
               <p>Do you whant to delete<br/> "{collection === "categories" ? currentItem?.name : currentItem?.title}"?</p>
               <div className="flex gap-4 justify-center mt-4">
                 <button className="btn btn_red" onClick={() => {
-                  deleteProduct(currentItem?._id);
+                  deleteItem(currentItem?._id);
                   setLoading(() => {
                     return {
                       inProgress: true,
@@ -77,7 +77,7 @@ export default function DeletePopup({collection}) {
                   dispatch(closeDelete());
                   setTimeout(() => {
                     setcurrentItem([])
-                  }, 300)
+                  }, 300) // timeout to remove Item after popup close
                 }}>No</button>
               </div>
             </>

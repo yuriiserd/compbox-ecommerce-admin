@@ -18,6 +18,12 @@ export default async function handle(req, res) {
     const categoryDoc = await Category.create({name, parent});
     res.json(categoryDoc);
   }
+ 
+  if (method === 'PUT') {
+    const {name, parent, _id} = req.body;
+    await Category.updateOne({_id}, {name, parent})
+    res.json(true);
+  }
 
   if (method === "DELETE") {
     if (req.query?.id) {
