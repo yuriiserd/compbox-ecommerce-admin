@@ -5,17 +5,21 @@ import { useRouter } from "next/router";
 import Image from "next/image";
 import Spinner from "./Spinner";
 import { ReactSortable } from "react-sortablejs";
+import Dropdown from "./Dropdown";
 
 
 export default function ProductForm({
   _id,
   title: existingTitle, 
+  // category: existingCategory,
   description: existingDescription,
   price: existingPrice,
   images: existingImages
 }) {
 
   const [title, setTitle] = useState(existingTitle || '');
+  const [categories, setCategories] = useState([]);
+  const [category, setCategory] = useState('');
   const [description, setDescription] = useState(existingDescription || '');
   const [price, setPrice] = useState(existingPrice || '');
   const [images, setImages] = useState(existingImages || []);
@@ -23,7 +27,13 @@ export default function ProductForm({
   const [goToProducts, setGoToProducts] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
 
-  const router = useRouter()
+  const router = useRouter();
+
+  useEffect(() => {
+    axios.get('/api/categories').then(res => {
+      setCategories(res.data);
+    })
+  }, []);
 
   async function saveProduct(e) {
     e.preventDefault();
@@ -59,7 +69,7 @@ export default function ProductForm({
   }
 
   function updateImagesOrder(images) {
-    images = images.map(image => image.toString())
+    images = images.map(image => image.toString());
     setImages(images);
   }
 
@@ -90,7 +100,17 @@ export default function ProductForm({
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             />
-          
+          <label className="w-full relative">
+            <span className="mb-2 block">Category</span>
+            
+            <Dropdown 
+              items={categories} 
+              selectedItem={setCategory}/>
+            
+            {/* {!!(parentError && parent?.length) && (
+              <Error message={"Please use existing category"}/>
+            )} */}
+          </label>
           <label>Description</label>
           <div className="mb-4">
             <Editor
