@@ -3,7 +3,7 @@ import { useState } from "react";
 
 export default function Dropdown(props) {
 
-  const [isVisibleDropdown, setIsVisibleDropdown] = useState(props.isVisible);
+  const [isVisibleDropdown, setIsVisibleDropdown] = useState(false);
   const [selectedItem, setSelectedItem] = useState('');
   const [items, setItems] = useState(props.items);
   const [filteredItems, setFilteredItems] = useState(props.items);
@@ -24,12 +24,17 @@ export default function Dropdown(props) {
   }
   return (
     <>
-      <div className="relative">
+      {isVisibleDropdown && (
+        <div 
+          className="fixed left-0 right-0 top-0 bottom-0 z-40"
+          onClick={() => {setIsVisibleDropdown(false)}}>
+        </div>
+      )}
+      <div className="relative z-50">
         <input
           className="mb-0 mr-0"
           type="text"
           placeholder="Parent Category"
-          data-dropdown
           onChange={ev => {
             setIsVisibleDropdown(true);
             props.selectedItem(ev.target.value);
@@ -42,18 +47,18 @@ export default function Dropdown(props) {
           className={classNames('dropdown-btn', {
             open: isVisibleDropdown
           })}
-          data-dropdown
           onClick={(e) => {
             e.preventDefault();
             setIsVisibleDropdown(!isVisibleDropdown);
           }}>
-          <svg data-dropdown xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
             <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
           </svg>
         </button>
       </div>
-      {isVisibleDropdown && !!filteredItems.length && (
-        <ul data-dropdown className="absolute bottom-0 left-0 right-0 h-60 overflow-y-scroll translate-y-full bg-stone-200 rounded-md px-2 pt-2">
+      {console.log(filteredItems)}
+      {isVisibleDropdown && (
+        <ul className="absolute z-50 bottom-0 left-0 right-0 h-60 overflow-y-scroll translate-y-full bg-stone-200 rounded-md px-2 pt-2">
           {filteredItems.map(item => (
             <li 
               className="border-b pb-1 pt-1 last:border-none border-stone-300 cursor-pointer" 
