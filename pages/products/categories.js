@@ -3,10 +3,9 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Back from "@/components/Back";
 import Spinner from "@/components/Spinner";
-import Link from "next/link";
 import Error from "@/components/Error";
-import classNames from "classnames";
 import DeletePopup from "@/components/DeletePopup";
+import Dropdown from "@/components/Dropdown";
 import { openDelete, setDeleteItem, selectOpenPopupDelete } from "@/slices/deleteSlice";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -16,9 +15,9 @@ export default function Categories() {
   const [parent, setParent] = useState('');
   const [nameError, setNameError] = useState(false);
   const [parentError, setParentError] = useState(false);
-  const [isVisibleDropdown, setisVisibleDropdown] = useState(false);
+  const [isVisibleDropdown, setIsVisibleDropdown] = useState(false);
   const [categories, setCategories] = useState([]);
-  const [filteredCategories, setFilteredCategories] = useState();
+  // const [filteredCategories, setFilteredCategories] = useState();
   const [isEditing, setIsEditing] = useState(false);
   const [editItem, setEditItem] = useState('');
 
@@ -27,29 +26,29 @@ export default function Categories() {
 
   useEffect(() => {
     updateCategories();
-  }, [openPopup])
+  }, [openPopup, isVisibleDropdown])
 
   function updateCategories() {
     axios.get('/api/categories').then(res => {
       setCategories(res.data);
-      setFilteredCategories(res.data)
+      // setFilteredCategories(res.data)
     })
   }
 
-  function filterCategories(target) {
-    target = target.toLowerCase();
-    setFilteredCategories(() => {
-      const filtered = [];
-      categories.forEach(cat => {
-        let {name} = cat;
-        name = name.toLowerCase();
-        if (name.includes(target)) {
-          filtered.push(cat)
-        }
-      })
-      return filtered
-    })
-  }
+  // function filterCategories(target) {
+  //   target = target.toLowerCase();
+  //   setFilteredCategories(() => {
+  //     const filtered = [];
+  //     categories.forEach(cat => {
+  //       let {name} = cat;
+  //       name = name.toLowerCase();
+  //       if (name.includes(target)) {
+  //         filtered.push(cat)
+  //       }
+  //     })
+  //     return filtered
+  //   })
+  // }
 
   function validateCat(target) {
     let bool = false;
@@ -95,7 +94,7 @@ export default function Categories() {
   return (
     <div onClick={(ev) => {
       if (!ev.target.getAttribute('data-dropdown')) {
-        setisVisibleDropdown(false)
+        setIsVisibleDropdown(false)
       }
     }}> {/* Wrapper for handle Parent Category dropdown */}
       <Layout>
@@ -140,56 +139,18 @@ export default function Categories() {
               </label>
               <label className="w-full relative">
                 <span className="mb-2 block">Parent Category</span>
-                <div className="relative">
-                  <input
-                    className="mb-0 mr-0"
-                    type="text"
-                    placeholder="Parent Category"
-                    data-dropdown
-                    onChange={ev => {
-                      setisVisibleDropdown(true)
-                      if (parentError) {
-                        validateError()
-                      }
-                      setParent(ev.target.value);
-                      filterCategories(ev.target.value);
-                    }}
-                    value={parent}
-                  />
-                  <button 
-                    className={classNames('dropdown-btn', {
-                      open: isVisibleDropdown
-                    })} 
-                    data-dropdown
-                    onClick={(e) => {
-                    e.preventDefault();
-                    setisVisibleDropdown(!isVisibleDropdown);
-                  }}>
-                    <svg data-dropdown xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                    </svg>
-                  </button>
-                </div>
+
+                <Dropdown 
+                  items={categories} 
+                  selectedItem={setParent} 
+                  isVisible={setIsVisibleDropdown}/>
+                
                 {!!(parentError && parent?.length) && (
                   <Error message={"Please use existing category"}/>
                 )}
-                {isVisibleDropdown && !!filteredCategories.length && (
-                  <ul data-dropdown className="absolute bottom-0 left-0 right-0 h-60 overflow-y-scroll translate-y-full bg-stone-200 rounded-md px-2 pt-2">
-                    {filteredCategories.map(category => (
-                      <li 
-                        className="border-b pb-1 pt-1 last:border-none border-stone-300 cursor-pointer" 
-                        key={category._id}
-                        onClick={() => {
-                          setParent(category.name);
-                          setisVisibleDropdown(false)
-                        }}
-                      >{category.name}</li>
-                    ))}
-                  </ul>
-                )}
               </label>
               <button 
-                onFocus={() => setisVisibleDropdown(false)} 
+                onFocus={() => setIsVisibleDropdown(false)} 
                 type="submit" 
                 className="btn"
               >Save</button>
