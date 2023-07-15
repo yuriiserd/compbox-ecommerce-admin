@@ -90,6 +90,7 @@ export default function ProductForm({
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             />
+          
           <label>Description</label>
           <div className="mb-4">
             <Editor
