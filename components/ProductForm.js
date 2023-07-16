@@ -11,19 +11,19 @@ import Dropdown from "./Dropdown";
 export default function ProductForm({
   _id,
   title: existingTitle, 
-  // category: existingCategory,
+  category: existingCategory,
   description: existingDescription,
   price: existingPrice,
   images: existingImages
 }) {
 
   const [title, setTitle] = useState(existingTitle || '');
-  const [categories, setCategories] = useState([]);
-  const [category, setCategory] = useState('');
+  const [category, setCategory] = useState(existingCategory || '');
   const [description, setDescription] = useState(existingDescription || '');
   const [price, setPrice] = useState(existingPrice || '');
   const [images, setImages] = useState(existingImages || []);
-
+  
+  const [categories, setCategories] = useState([]);
   const [goToProducts, setGoToProducts] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
 
@@ -37,7 +37,7 @@ export default function ProductForm({
 
   async function saveProduct(e) {
     e.preventDefault();
-    const data = {title, description, price, images};
+    const data = {title, category, description, price, images};
     if (_id) {
       await axios.put('/api/products', {...data, _id});
     } else {
@@ -105,6 +105,7 @@ export default function ProductForm({
             
             <Dropdown 
               items={categories} 
+              initialItem={category}
               selectedItem={setCategory}/>
             
             {/* {!!(parentError && parent?.length) && (
@@ -121,15 +122,15 @@ export default function ProductForm({
               init={{
                 height: 500,
                 menubar: true,
-                plugins: [
-                  'advlist autolink lists link image charmap print preview anchor',
-                  'searchreplace visualblocks code fullscreen',
-                  'insertdatetime media table paste code help wordcount'
-                ],
-                toolbar: 'undo redo | formatselect | ' +
-                'bold italic backcolor | alignleft aligncenter ' +
-                'alignright alignjustify | bullist numlist outdent indent | ' +
-                'removeformat | help',
+                // plugins: [
+                //   'advlist autolink lists link image charmap print preview anchor',
+                //   'searchreplace visualblocks code fullscreen',
+                //   'insertdatetime media table paste code help wordcount'
+                // ],
+                // toolbar: 'undo redo | formatselect | ' +
+                // 'bold italic backcolor | alignleft aligncenter ' +
+                // 'alignright alignjustify | bullist numlist outdent indent | ' +
+                // 'removeformat | help',
                 content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
               }}
             />
