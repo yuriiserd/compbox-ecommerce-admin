@@ -1,12 +1,21 @@
 import classNames from "classnames";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Dropdown(props) {
 
   const [isVisibleDropdown, setIsVisibleDropdown] = useState(false);
   const [selectedItem, setSelectedItem] = useState('');
-  const [items, setItems] = useState(props.items);
-  const [filteredItems, setFilteredItems] = useState(props.items);
+  const [items, setItems] = useState([]);
+  const [filteredItems, setFilteredItems] = useState([]);
+
+  useEffect(() => {
+    setItems(props.items);
+    setSelectedItem(props.initialItem);
+  }, [isVisibleDropdown, props.initialItem])
+
+  useEffect(() => {
+    setFilteredItems(props.items);
+  }, [isVisibleDropdown])
 
   function filterItems(target) {
     target = target.toLowerCase();
@@ -56,7 +65,6 @@ export default function Dropdown(props) {
           </svg>
         </button>
       </div>
-      {console.log(filteredItems)}
       {isVisibleDropdown && (
         <ul className="absolute z-50 bottom-0 left-0 right-0 h-60 overflow-y-scroll translate-y-full bg-stone-200 rounded-md px-2 pt-2">
           {filteredItems.map(item => (

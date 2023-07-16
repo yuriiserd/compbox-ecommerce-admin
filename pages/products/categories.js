@@ -122,6 +122,7 @@ export default function Categories() {
 
               <Dropdown 
                 items={categories} 
+                initialItem={parent}
                 selectedItem={setParent}/>
               
               {!!(parentError && parent?.length) && (
