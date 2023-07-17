@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+html, body, * {
+  scroll-behavior: smooth;
+}
+
 input {
   @apply border-2 px-2 py-1 border-stone-200 rounded-md w-full mb-4 mr-4;
 }
@@ -18,7 +22,7 @@ label {
   display: block;
 }
 .btn {
-  @apply bg-stone-700 text-white py-1 px-4 rounded-md transition-all;
+  @apply bg-stone-700 text-white py-1 px-4 pb-1.5 rounded-md transition-all;
   &:hover {
     @apply bg-stone-600 text-stone-100
   }
@@ -26,6 +30,12 @@ label {
     @apply bg-red-800 text-white;
     &:hover {
       @apply bg-red-700
+    }
+  }
+  &_white{
+    @apply bg-white text-stone-700 border-stone-700 border;
+    &:hover {
+      @apply btn;
     }
   }
   &:disabled {
