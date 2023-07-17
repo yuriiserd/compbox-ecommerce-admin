@@ -42,8 +42,8 @@ export default function Products() {
           {products.map(product => (
             <tr key={product._id} className="table-row">
               <td>{product.title}</td>
-              <td className="hidden md:table-cell">{product._id}</td>
-              <td><strong>{product.price}</strong></td>
+              <td className="hidden md:table-cell">{product.category}</td>
+              <td>{product.price}$</td>
               <td className="flex border-none ml-2 gap-4 border-stone-200 border-r">
                 <Link className="text-stone-700" href={`/products/edit/${product._id}`}>
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">

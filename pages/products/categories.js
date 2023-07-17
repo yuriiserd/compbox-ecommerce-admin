@@ -1,5 +1,5 @@
 import Layout from "@/components/Layout";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import Back from "@/components/Back";
 import Spinner from "@/components/Spinner";
@@ -8,6 +8,8 @@ import DeletePopup from "@/components/DeletePopup";
 import Dropdown from "@/components/Dropdown";
 import { openDelete, setDeleteItem, selectOpenPopupDelete } from "@/slices/deleteSlice";
 import { useDispatch, useSelector } from "react-redux";
+import DeleteIcon from "@/components/icons/DeleteIcon";
+import EditIcon from "@/components/icons/EditIcon";
 
 export default function Categories() {
 
@@ -18,12 +20,15 @@ export default function Categories() {
   const [parentError, setParentError] = useState(false);
   
   const [categories, setCategories] = useState([]);
+  const [properties, setProperties] = useState([]);
 
   const [isEditing, setIsEditing] = useState(false);
   const [editItem, setEditItem] = useState('');
 
   const openPopup = useSelector(selectOpenPopupDelete);
   const dispatch = useDispatch();
+
+  const categoryFormRef = useRef(null);
 
   useEffect(() => {
     updateCategories();
@@ -53,6 +58,44 @@ export default function Categories() {
   
   }
 
+  function editCategory(category) {
+    categoryFormRef.current.scrollIntoView();
+    setName(category.name);
+    setParent(category.parent || '');
+    setProperties(category.properties || []);
+    setIsEditing(true);
+    setEditItem(category._id);
+  }
+
+  function addProperty() {
+    setProperties((old) => {
+      return [...old, {name: '', values: []}]
+    })
+  }
+
+  function deleteProperty(index) {
+    setProperties((old) => {
+      const newProperties = [...old];
+      return newProperties.filter((property, propertyIndex) => propertyIndex !== index)
+    })
+  }
+
+  function addPropertyName(name, index) {
+    setProperties((old) => {
+      const newProperties = [...old];
+      newProperties[index].name = name;
+      return newProperties
+    })
+  }
+
+  function addPropertyValues(values, index) {
+    setProperties((old) => {
+      const newProperties = [...old];
+      newProperties[index].values = values.split(',');
+      return newProperties
+    })
+  }
+
   async function saveCategory() {
     if (validateCat(name) && !validateCat(parent)) return;
     if (name === '') return;
@@ -64,6 +107,16 @@ export default function Categories() {
       data.parent = '';
     }
 
+    if (properties.length > 0) {
+      setProperties((old) => {
+        const newProperties = [...old];
+        // return newProperties.map(property => property.values.map(value => value.trimStart().trimEnd())); // remove spaces from start/end for each value
+        return newProperties
+      })
+      
+      data.properties = properties;
+    }
+
     if (isEditing) {
       await axios.put('/api/categories', {...data, _id: editItem});
     } else {
@@ -72,13 +125,17 @@ export default function Categories() {
 
     setName('');
     setParent('');
+    setProperties([])
     updateCategories();
     setIsEditing(false);
   }
 
   return (
     <Layout>
-      <h1 className="flex items-center gap-4">
+      <h1 
+        ref={categoryFormRef} 
+        className="flex items-center gap-4"
+      >
         <Back to={"/products/"}/>
         Categories
       </h1>
@@ -129,6 +186,38 @@ export default function Categories() {
                 <Error message={"Please use existing category"}/>
               )}
             </label>
+            <div className="w-full relative flex flex-wrap justify-between">
+              <span className="mb-2">Properties</span>
+
+              <button
+                className="mb-2 mr-0 btn btn_white"
+                type="button"
+                onClick={addProperty}
+              >Add property</button>
+
+              {!!properties.length && properties.map((property, index) => (
+                <div key={index} className="flex flex-wrap sm:flex-nowrap mt-2 gap-2 mb-2 items-center w-full">
+                  <input 
+                    className="w-full block mr-0 mb-0"
+                    placeholder="Name"
+                    onChange={(event) => addPropertyName(event.target.value, index)}
+                    value={property.name}                
+                  />
+                  <input 
+                    className="w-full block mr-0 mb-0"
+                    placeholder="Values (coma separated)"
+                    onChange={(event) => addPropertyValues(event.target.value, index)}  
+                    value={property.values.join(',')}              
+                  />
+                  <button 
+                    onClick={() => deleteProperty(index)}
+                  >
+                    <DeleteIcon/>
+                  </button>
+                </div>
+              ))}
+              
+            </div>
             <button  
               type="submit" 
               className="btn"
@@ -155,23 +244,14 @@ export default function Categories() {
                   <td>{category.name}</td>
                   <td>{category.parent}</td>
                   <td className="flex border-none ml-2 gap-4 border-stone-200 border-r">
-                    <button title="edit" onClick={() => {
-                      setName(category.name);
-                      setParent(category.parent);
-                      setIsEditing(true);
-                      setEditItem(category._id);
-                    }} className="text-stone-700">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
-                      </svg>
+                    <button title="edit" onClick={() => editCategory(category)} className="text-stone-700">
+                      <EditIcon/>
                     </button>
                     <button title="delete" onClick={() => {
                       dispatch(setDeleteItem(category._id));
                       dispatch(openDelete());
                     }} className="text-stone-700">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                      </svg>
+                      <DeleteIcon/>
                     </button>
                   </td>
                 </tr>
