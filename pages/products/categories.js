@@ -39,7 +39,7 @@ export default function Categories() {
       setCategories(res.data);
     })
   }
-
+  //TODO validation for properties and category name and parent
   function validateCat(target) {
     let bool = false;
     categories.forEach(cat => {
@@ -80,6 +80,13 @@ export default function Categories() {
     })
   }
 
+  function cancelEdit() {
+    setName('');
+    setParent('');
+    setProperties([]);
+    setIsEditing(false);
+  }
+  
   function addPropertyName(name, index) {
     setProperties((old) => {
       const newProperties = [...old];
@@ -166,10 +173,10 @@ export default function Categories() {
                 }}
                 value={name}
               />
-              {(nameError && !!name.length && isEditing) && (
+              {false && (
                 <Error message={"This category already exist"}/>
               )}
-              {(nameError && !name.length) && (
+              {false && (
                 <Error message={"Please enter category name"}/>
               )}
 
@@ -182,7 +189,7 @@ export default function Categories() {
                 initialItem={parent}
                 selectedItem={setParent}/>
               
-              {!!(parentError && parent?.length) && (
+              {parentError && (
                 <Error message={"Please use existing category"}/>
               )}
             </label>
@@ -218,10 +225,19 @@ export default function Categories() {
               ))}
               
             </div>
-            <button  
-              type="submit" 
-              className="btn"
-            >Save</button>
+            <div className="flex gap-2">
+              <button  
+                type="submit" 
+                className="btn"
+              >Save</button>
+              {isEditing && (
+                <button  
+                  type="button" 
+                  onClick={cancelEdit}
+                  className="btn btn_red"
+                >Cancel</button>
+              )}
+            </div>
           </form>
         </div>
         <div className="w-full md:w-1/2">

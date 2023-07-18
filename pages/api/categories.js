@@ -31,6 +31,6 @@ export default async function handle(req, res) {
     }
     setTimeout(() => {
       res.json(true)
-    }, 500) // just for testing loading gif 
+    }, 10) // just for testing loading gif 
   }
 }
