@@ -44,7 +44,7 @@ export default function DeletePopup({collection}) {
             done: false
           }
         })
-      }, 1500) // timeout to show "item deleted" gif
+      }, 10) // timeout to show "item deleted" gif
     })
   }
 
