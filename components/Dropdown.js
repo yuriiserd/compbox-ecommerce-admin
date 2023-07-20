@@ -36,8 +36,8 @@ export default function Dropdown(props) {
 
     items.forEach(item => {
       if (item.name.includes(name)) {
-        setSelectedItem((item) => {
-          item.name = name
+        setSelectedItem({
+          name
         });
         if (item.name === name) {
           props.selectedItem(item);
@@ -65,7 +65,7 @@ export default function Dropdown(props) {
             findItemByName(ev.target.value);
             filterItems(ev.target.value);
           }}
-          value={selectedItem.length > 0 ? selectedItem.name : selectedItem.name}
+          value={selectedItem.name || ''}
         />
         <button
           className={classNames('dropdown-btn', {

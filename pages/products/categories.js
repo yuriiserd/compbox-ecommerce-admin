@@ -112,11 +112,13 @@ export default function Categories() {
   async function saveCategory() {
     if (validateCat(name) && !validateCat(parent.name)) return;
     if (name === '') return;
-    const data = {name, properties: []};
+    const data = {name, parent: {}, properties: []};
 
-    if (validateCat(parent.name)) {
-      data.parent = parent._id
-    }
+    // if (validateCat(parent.name)) {
+    //   data.parent = parent?._id;
+    // }
+
+    data.parent = parent?._id;
 
     if (properties.length > 0) {
       // setProperties((old) => {
@@ -135,7 +137,7 @@ export default function Categories() {
     }
 
     setName('');
-    setParent('');
+    setParent({});
     setProperties([])
     updateCategories();
     setIsEditing(false);
