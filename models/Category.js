@@ -1,8 +1,8 @@
-import { model, models, Schema } from "mongoose"
+import mongoose, { model, models, Schema } from "mongoose"
 
 const CategorySchema = new Schema({
   name: {type: String, required: true},
-  parent: {type: String},
+  parent: {type:mongoose.Types.ObjectId, ref: 'Category'},
   properties: [{
     name: {type: String},
     values: [{type: String}]

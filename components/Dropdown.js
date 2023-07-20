@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 export default function Dropdown(props) {
 
   const [isVisibleDropdown, setIsVisibleDropdown] = useState(false);
-  const [selectedItem, setSelectedItem] = useState('');
+  const [selectedItem, setSelectedItem] = useState({});
   const [items, setItems] = useState([]);
   const [filteredItems, setFilteredItems] = useState([]);
 
@@ -31,6 +31,22 @@ export default function Dropdown(props) {
       return filtered
     })
   }
+
+  function findItemByName(name) {
+
+    items.forEach(item => {
+      if (item.name.includes(name)) {
+        setSelectedItem((item) => {
+          item.name = name
+        });
+        if (item.name === name) {
+          props.selectedItem(item);
+          setSelectedItem(item)
+        }
+      }
+    })
+  }
+
   return (
     <>
       {isVisibleDropdown && (
@@ -46,11 +62,10 @@ export default function Dropdown(props) {
           placeholder="Parent Category"
           onChange={ev => {
             setIsVisibleDropdown(true);
-            props.selectedItem(ev.target.value);
-            setSelectedItem(ev.target.value);
+            findItemByName(ev.target.value);
             filterItems(ev.target.value);
           }}
-          value={selectedItem}
+          value={selectedItem.length > 0 ? selectedItem.name : selectedItem.name}
         />
         <button
           className={classNames('dropdown-btn', {
@@ -72,8 +87,8 @@ export default function Dropdown(props) {
               className="border-b pb-1 pt-1 last:border-none border-stone-300 cursor-pointer" 
               key={item._id}
               onClick={() => {
-                props.selectedItem(item.name);
-                setSelectedItem(item.name);
+                props.selectedItem(item);
+                setSelectedItem(item);
                 setIsVisibleDropdown(false)
               }}
             >{item.name}</li>

@@ -14,10 +14,11 @@ import EditIcon from "@/components/icons/EditIcon";
 export default function Categories() {
 
   const [name, setName] = useState('');
-  const [parent, setParent] = useState('');
+  const [parent, setParent] = useState({});
 
   const [nameError, setNameError] = useState(false);
   const [parentError, setParentError] = useState(false);
+  const [noItemsFound, setNoItemsFound] = useState(false);
   
   const [categories, setCategories] = useState([]);
   const [properties, setProperties] = useState([]);
@@ -32,19 +33,24 @@ export default function Categories() {
 
   useEffect(() => {
     updateCategories();
-  }, [openPopup])
+  }, [openPopup, noItemsFound])
 
   function updateCategories() {
     axios.get('/api/categories').then(res => {
       setCategories(res.data);
+      if (res.data.length === 0) {
+        setNoItemsFound(true)
+      } else {
+        setNoItemsFound(false)
+      }
     })
   }
   //TODO validation for properties and category name and parent
   function validateCat(target) {
-    let bool = false;
+    let bool = true;
     categories.forEach(cat => {
-      if (cat.name === target) {
-        bool = true
+      if (cat.name !== target) {
+        bool = false
       }
     });
     return bool
@@ -54,14 +60,14 @@ export default function Categories() {
 
     validateCat(name) || name === '' ? setNameError(true) : setNameError(false);
 
-    !validateCat(parent) && parent !== '' ? setParentError(true) : setParentError(false)
+    !validateCat(parent?.name) ? setParentError(true) : setParentError(false)
   
   }
 
   function editCategory(category) {
     categoryFormRef.current.scrollIntoView();
     setName(category.name);
-    setParent(category.parent || '');
+    setParent(category.parent || {});
     setProperties(category.properties || []);
     setIsEditing(true);
     setEditItem(category._id);
@@ -104,24 +110,22 @@ export default function Categories() {
   }
 
   async function saveCategory() {
-    if (validateCat(name) && !validateCat(parent)) return;
+    if (validateCat(name) && !validateCat(parent.name)) return;
     if (name === '') return;
-    const data = {name};
+    const data = {name, properties: []};
 
-    if (validateCat(parent)) {
-      data.parent = parent
-    } else {
-      data.parent = '';
+    if (validateCat(parent.name)) {
+      data.parent = parent._id
     }
 
     if (properties.length > 0) {
-      setProperties((old) => {
-        const newProperties = [...old];
-        // return newProperties.map(property => property.values.map(value => value.trimStart().trimEnd())); // remove spaces from start/end for each value
-        return newProperties
-      })
+      // setProperties((old) => {
+      //   const newProperties = [...old];
+      //   return newProperties.map(property => property.values.map(value => value.trimStart().trimEnd())); // remove spaces from start/end for each value
+      //   return newProperties
+      // })
       
-      data.properties = properties;
+      data.properties = properties.map(property => property.values.map(value => value.trimStart().trimEnd()));;
     }
 
     if (isEditing) {
@@ -250,15 +254,20 @@ export default function Categories() {
               </tr>
             </thead>
             <tbody>
-              {!categories.length && (
+              {!categories.length && !noItemsFound && (
                 <tr>
                   <td colSpan={99}><Spinner/></td>
+                </tr>
+              )}
+              {noItemsFound && (
+                <tr>
+                  <td className="text-center p-4" colSpan={99}>No categories found</td>
                 </tr>
               )}
               {categories.map(category => (
                 <tr key={category._id} className="table-row">
                   <td>{category.name}</td>
-                  <td>{category.parent}</td>
+                  <td>{category.parent?.name}</td>
                   <td className="flex border-none ml-2 gap-4 border-stone-200 border-r">
                     <button title="edit" onClick={() => editCategory(category)} className="text-stone-700">
                       <EditIcon/>

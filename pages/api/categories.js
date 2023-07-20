@@ -6,11 +6,7 @@ export default async function handle(req, res) {
   await mongooseConnect();
 
   if (method === 'GET') {
-    if (req.query?.id) {
-      res.json(await Category.findOne({_id: req.query.id}));
-    } else {
-      res.json(await Category.find());
-    }
+    res.json(await Category.find().populate('parent'));
   }
 
   if (method === 'POST') {
