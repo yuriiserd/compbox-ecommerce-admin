@@ -35,11 +35,13 @@ export default function Dropdown(props) {
   function findItemByName(name) {
 
     items.forEach(item => {
-      if (item.name.includes(name)) {
+      let itemName = item.name.toLowerCase();
+      let nameLowerCase = name.toLowerCase()
+      if (itemName.includes(nameLowerCase)) {
         setSelectedItem({
           name
         });
-        if (item.name === name) {
+        if (itemName === nameLowerCase) {
           props.selectedItem(item);
           setSelectedItem(item)
         }
