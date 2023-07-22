@@ -17,7 +17,6 @@ export default function Categories() {
   const [parent, setParent] = useState({});
 
   const [nameError, setNameError] = useState(false);
-  const [parentError, setParentError] = useState(false);
   const [noItemsFound, setNoItemsFound] = useState(false);
   
   const [categories, setCategories] = useState([]);
@@ -45,7 +44,7 @@ export default function Categories() {
       }
     })
   }
-  //TODO validation for properties and category name and parent
+
   function validateCat(target) {
     let bool = true;
     categories.forEach(cat => {
@@ -59,8 +58,6 @@ export default function Categories() {
   function validateError() {
 
     validateCat(name) || name === '' ? setNameError(true) : setNameError(false);
-
-    !validateCat(parent?.name) ? setParentError(true) : setParentError(false)
   
   }
 
@@ -121,13 +118,11 @@ export default function Categories() {
     data.parent = parent?._id;
 
     if (properties.length > 0) {
-      // setProperties((old) => {
-      //   const newProperties = [...old];
-      //   return newProperties.map(property => property.values.map(value => value.trimStart().trimEnd())); // remove spaces from start/end for each value
-      //   return newProperties
-      // })
-      
-      data.properties = properties.map(property => property.values.map(value => value.trimStart().trimEnd()));;
+      const trimedProperties = properties;
+      trimedProperties.forEach(property => {
+        property.values = property.values.map(value => value.trimStart().trimEnd())
+      });
+      data.properties = trimedProperties;
     }
 
     if (isEditing) {
@@ -194,10 +189,6 @@ export default function Categories() {
                 items={categories} 
                 initialItem={parent}
                 selectedItem={setParent}/>
-              
-              {parentError && (
-                <Error message={"Please use existing category"}/>
-              )}
             </label>
             <div className="w-full relative flex flex-wrap justify-between">
               <span className="mb-2">Properties</span>
