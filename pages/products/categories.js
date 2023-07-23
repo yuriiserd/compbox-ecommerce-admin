@@ -37,9 +37,9 @@ export default function Categories() {
     updateCategories();
   }, [openPopup, noItemsFound])
 
-  useEffect(() => {
-    updateCategoriesOrderDB();
-  }, [isOrderUpdated])
+  // useEffect(() => {
+  //   updateCategoriesOrderDB();
+  // }, [isOrderUpdated])
 
   function updateCategories() {
     axios.get('/api/categories').then(res => {
@@ -56,7 +56,7 @@ export default function Categories() {
     })
   }
 
-  async function updateCategoriesOrderDB() {
+  function updateCategoriesOrderDB() {
 
     setCategories(categories => {
       const newCat = categories;
@@ -65,7 +65,10 @@ export default function Categories() {
       })
       return newCat;
     })
-    await axios.put('/api/categories?many=true', categories);
+    setTimeout(async () => {
+      await axios.put('/api/categories?many=true', categories);
+    }, 1000)
+
   }
 
   function validateCat(target) {
@@ -131,7 +134,8 @@ export default function Categories() {
 
   function updateCategoriesOrder(categories) {
     setCategories(categories);
-    setIsOrderUpdated(!isOrderUpdated);
+    // setIsOrderUpdated(!isOrderUpdated);
+    updateCategoriesOrderDB()
   }
 
   async function saveCategory() {
