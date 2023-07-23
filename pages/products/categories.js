@@ -10,6 +10,8 @@ import { openDelete, setDeleteItem, selectOpenPopupDelete } from "@/slices/delet
 import { useDispatch, useSelector } from "react-redux";
 import DeleteIcon from "@/components/icons/DeleteIcon";
 import EditIcon from "@/components/icons/EditIcon";
+import { ReactSortable } from "react-sortablejs";
+
 
 export default function Categories() {
 
@@ -23,6 +25,7 @@ export default function Categories() {
   const [properties, setProperties] = useState([]);
 
   const [isEditing, setIsEditing] = useState(false);
+  const [isOrderUpdated, setIsOrderUpdated] = useState(true);
   const [editItem, setEditItem] = useState('');
 
   const openPopup = useSelector(selectOpenPopupDelete);
@@ -34,15 +37,38 @@ export default function Categories() {
     updateCategories();
   }, [openPopup, noItemsFound])
 
+  // useEffect(() => {
+  //   updateCategoriesOrderDB();
+  // }, [isOrderUpdated])
+
   function updateCategories() {
     axios.get('/api/categories').then(res => {
-      setCategories(res.data);
+      const categories = res.data;
+      categories.sort((a, b) => {
+        return a.order - b.order;
+      });
+      setCategories(categories);
       if (res.data.length === 0) {
         setNoItemsFound(true)
       } else {
         setNoItemsFound(false)
       }
     })
+  }
+
+  function updateCategoriesOrderDB() {
+
+    setCategories(categories => {
+      const newCat = categories;
+      newCat.forEach((cat, index) => {
+        cat.order = index
+      })
+      return newCat;
+    })
+    setTimeout(async () => {
+      await axios.put('/api/categories?many=true', categories);
+    }, 1000)
+
   }
 
   function validateCat(target) {
@@ -106,14 +132,16 @@ export default function Categories() {
     })
   }
 
+  function updateCategoriesOrder(categories) {
+    setCategories(categories);
+    // setIsOrderUpdated(!isOrderUpdated);
+    updateCategoriesOrderDB()
+  }
+
   async function saveCategory() {
     if (validateCat(name) && !validateCat(parent.name)) return;
     if (name === '') return;
     const data = {name, parent: {}, properties: []};
-
-    // if (validateCat(parent.name)) {
-    //   data.parent = parent?._id;
-    // }
 
     data.parent = parent?._id;
 
@@ -238,44 +266,51 @@ export default function Categories() {
           </form>
         </div>
         <div className="w-full md:w-1/2">
-          <table className="default mt-6">
-            <thead>
-              <tr>
-                <td>Category Name</td>
-                <td>Parent Category</td>
-                <td>Actions</td>
-              </tr>
-            </thead>
-            <tbody>
+          <div className="table default mt-6">
+            <div className="table__head">
+              <ul className="table-row">
+                <li>Category Name</li>
+                <li>Parent Category</li>
+                <li>Actions</li>
+              </ul>
+            </div>
+            <div className="table__body">
               {!categories.length && !noItemsFound && (
-                <tr>
-                  <td colSpan={99}><Spinner/></td>
-                </tr>
+                <ul className="table-row">
+                  <li className="w-full"><Spinner/></li>
+                </ul>
               )}
               {noItemsFound && (
-                <tr>
-                  <td className="text-center p-4" colSpan={99}>No categories found</td>
-                </tr>
+                <ul className="table-row">
+                  <li className="text-center p-4 w-full">No categories found</li>
+                </ul>
               )}
-              {categories.map(category => (
-                <tr key={category._id} className="table-row">
-                  <td>{category.name}</td>
-                  <td>{category.parent?.name}</td>
-                  <td className="flex border-none ml-2 gap-4 border-stone-200 border-r">
-                    <button title="edit" onClick={() => editCategory(category)} className="text-stone-700">
-                      <EditIcon/>
-                    </button>
-                    <button title="delete" onClick={() => {
-                      dispatch(setDeleteItem(category._id));
-                      dispatch(openDelete());
-                    }} className="text-stone-700">
-                      <DeleteIcon/>
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+              <ReactSortable
+                animation={200}
+                list={categories}
+                setList={updateCategoriesOrder}
+              >
+                {categories.map((category) => (
+                  <ul key={category._id} className="table-row">
+                    <li>{category.name}</li>
+                    <li>{category.parent?.name}</li>
+                    <li className="flex gap-3 border-stone-200">
+                      <button title="edit" onClick={() => editCategory(category)} className="text-stone-700">
+                        <EditIcon/>
+                      </button>
+                      <button title="delete" onClick={() => {
+                        dispatch(setDeleteItem(category._id));
+                        dispatch(openDelete());
+                      }} className="text-stone-700">
+                        <DeleteIcon/>
+                      </button>
+                    </li>
+                  </ul>
+                ))}
+              </ReactSortable>
+              
+            </div>
+          </div>
         </div>
       </div>
       <DeletePopup collection={'categories'}/>

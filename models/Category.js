@@ -6,7 +6,8 @@ const CategorySchema = new Schema({
   properties: [{
     name: {type: String},
     values: [{type: String}]
-  }]
+  }],
+  order: {type: Number}
 });
 
 export const Category = models.Category || model('Category', CategorySchema);

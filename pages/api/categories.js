@@ -1,7 +1,7 @@
-import { mongooseConnect } from "@/lib/mongoose";
 import { Category } from "@/models/Category";
+import { mongooseConnect } from "@/lib/mongoose";
 
-export default async function handle(req, res) {
+export default async function handler(req, res) {
   const {method} = req;
   await mongooseConnect();
 
@@ -20,9 +20,18 @@ export default async function handle(req, res) {
   }
  
   if (method === 'PUT') {
-    const {name, parent, properties, _id} = req.body;
-    await Category.updateOne({_id}, {name, parent, properties})
-    res.json(true);
+    if (req.query?.many) {
+      const categories = req.body;
+      categories.forEach(async (category) => {
+        const {name, parent, properties, _id, order} = category;
+        await Category.updateOne({_id}, {name, parent, properties, order})
+       })
+      res.json(true);
+    } else {
+      const {name, parent, properties, _id} = req.body;
+      await Category.updateOne({_id}, {name, parent, properties})
+      res.json(true);
+    }
   }
 
   if (method === "DELETE") {
