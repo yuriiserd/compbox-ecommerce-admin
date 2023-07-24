@@ -5,6 +5,7 @@ const ProductSchema = new Schema({
   category: {type:mongoose.Types.ObjectId, ref: 'Category'},
   description: String,
   price: {type: Number, required: true},
+  salePrice: {type: Number},
   images: [{type: String}],
 });
 

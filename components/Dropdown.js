@@ -10,7 +10,7 @@ export default function Dropdown(props) {
 
   useEffect(() => {
     setItems(props.items);
-    setSelectedItem(props.initialItem);
+    setSelectedItem(props.initialItem || {});
   }, [isVisibleDropdown, props.initialItem])
 
   useEffect(() => {
