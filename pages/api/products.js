@@ -7,23 +7,23 @@ export default async function handler(req, res) {
 
   if (method === "GET") {
     if (req.query?.id) {
-      res.json(await Product.findOne({_id:req.query.id}))
+      res.json(await Product.findOne({_id:req.query.id}).populate('category'))
     } else {
       res.json(await Product.find().populate('category'));
     }
   }
 
   if (method === "POST") {
-    const {title, category, description, price, images} = req.body;
+    const {title, category, description, price, salePrice, images} = req.body;
     const productDoc = await Product.create({
-      title, category, description, price, images
+      title, category, description, price, salePrice, images
     })
     res.json(productDoc);
   }
 
   if (method === "PUT") {
-    const {title, category, description, price, images, _id} = req.body;
-    await Product.updateOne({_id}, {title, category, description, price, images});
+    const {title, category, description, price, salePrice, images, _id} = req.body;
+    await Product.updateOne({_id}, {title, category, description, price, salePrice, images});
     res.json(true);
   }
 

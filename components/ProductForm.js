@@ -14,6 +14,7 @@ export default function ProductForm({
   category: existingCategory,
   description: existingDescription,
   price: existingPrice,
+  salePrice: existingSalePrice,
   images: existingImages
 }) {
 
@@ -21,6 +22,8 @@ export default function ProductForm({
   const [category, setCategory] = useState(existingCategory || {});
   const [description, setDescription] = useState(existingDescription || '');
   const [price, setPrice] = useState(existingPrice || '');
+  const [salePrice, setSalePrice] = useState(existingSalePrice || '');
+
   const [images, setImages] = useState(existingImages || []);
   
   const [categories, setCategories] = useState([]);
@@ -37,7 +40,7 @@ export default function ProductForm({
 
   async function saveProduct(e) {
     e.preventDefault();
-    const data = {title, category, description, price, images};
+    const data = {title, category, description, price, salePrice, images};
     if (_id) {
       await axios.put('/api/products', {...data, _id});
     } else {
@@ -88,6 +91,8 @@ export default function ProductForm({
       return newImages;
     })
   }
+
+
   
   return (
     <>
@@ -107,11 +112,8 @@ export default function ProductForm({
               items={categories} 
               initialItem={category}
               selectedItem={setCategory}/>
-            
-            {/* {!!(parentError && parent?.length) && (
-              <Error message={"Please use existing category"}/>
-            )} */}
           </label>
+          {/* TODO category properties select */}
           <label>Description</label>
           <div className="mb-4">
             <Editor
@@ -122,15 +124,6 @@ export default function ProductForm({
               init={{
                 height: 500,
                 menubar: true,
-                // plugins: [
-                //   'advlist autolink lists link image charmap print preview anchor',
-                //   'searchreplace visualblocks code fullscreen',
-                //   'insertdatetime media table paste code help wordcount'
-                // ],
-                // toolbar: 'undo redo | formatselect | ' +
-                // 'bold italic backcolor | alignleft aligncenter ' +
-                // 'alignright alignjustify | bullist numlist outdent indent | ' +
-                // 'removeformat | help',
                 content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
               }}
             />
@@ -140,7 +133,13 @@ export default function ProductForm({
           <input 
             type="number"
             value={price}
-            onChange={(e) => setPrice(e.target.value)}
+            onChange={(e) => setPrice(parseFloat(e.target.value))}
+            />
+          <label>Sale Price</label>
+          <input 
+            type="number"
+            value={salePrice}
+            onChange={(e) => setSalePrice(parseFloat(e.target.value))}
             />
           <button type="submit" className="btn ">{_id ? 'Save' : 'Add Product'}</button>
         </div>
@@ -156,7 +155,7 @@ export default function ProductForm({
               >
                 {images.map(link => (
                   <div key={link} className="image-preview">
-                    <Image src={link} className="rounded-lg object-cover h-24 w-24 hover:cursor-grab" width={96} height={96} alt={`image`}/>
+                    <Image src={link} className="rounded-lg object-cover h-24 w-24 hover:cursor-grab hover:object-contain" width={96} height={96} alt={`image`}/>
                     <div className="delete" onClick={() => deleteImage(link)}>
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -164,6 +163,7 @@ export default function ProductForm({
                     </div>
                   </div>
                 ))}
+                
               </ReactSortable>
             )}
             {isUploading && (
