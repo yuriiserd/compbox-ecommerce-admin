@@ -1,4 +1,5 @@
 import { Product } from "@/models/Product";
+import { Category } from "@/models/Category"; //load Category model to show Products after server restart
 import { mongooseConnect } from "@/lib/mongoose";
 
 export default async function handler(req, res) {
@@ -14,16 +15,16 @@ export default async function handler(req, res) {
   }
 
   if (method === "POST") {
-    const {title, category, description, price, salePrice, images} = req.body;
+    const {title, category, description, price, salePrice, images, properties} = req.body;
     const productDoc = await Product.create({
-      title, category, description, price, salePrice, images
+      title, category, description, price, salePrice, images, properties
     })
     res.json(productDoc);
   }
 
   if (method === "PUT") {
-    const {title, category, description, price, salePrice, images, _id} = req.body;
-    await Product.updateOne({_id}, {title, category, description, price, salePrice, images});
+    const {title, category, description, price, salePrice, images, properties, _id} = req.body;
+    await Product.updateOne({_id}, {title, category, description, price, salePrice, images, properties});
     res.json(true);
   }
 
