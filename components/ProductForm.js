@@ -1,11 +1,12 @@
 import { Editor } from "@tinymce/tinymce-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import Spinner from "./Spinner";
 import { ReactSortable } from "react-sortablejs";
 import Dropdown from "./Dropdown";
+import DropdownProperties from "./DropdownProperties";
 
 
 export default function ProductForm({
@@ -15,7 +16,8 @@ export default function ProductForm({
   description: existingDescription,
   price: existingPrice,
   salePrice: existingSalePrice,
-  images: existingImages
+  images: existingImages,
+  properties: existingProperties
 }) {
 
   const [title, setTitle] = useState(existingTitle || '');
@@ -23,6 +25,9 @@ export default function ProductForm({
   const [description, setDescription] = useState(existingDescription || '');
   const [price, setPrice] = useState(existingPrice || '');
   const [salePrice, setSalePrice] = useState(existingSalePrice || '');
+  const [productProperties, setProductProperties] = useState(existingProperties || []);
+
+  const [propertiesToShow, setPropertiesToShow] = useState([]);
 
   const [images, setImages] = useState(existingImages || []);
   
@@ -35,12 +40,13 @@ export default function ProductForm({
   useEffect(() => {
     axios.get('/api/categories').then(res => {
       setCategories(res.data);
-    })
-  }, []);
+    });
+    getPropertiesToShow()
+  }, [category]);
 
   async function saveProduct(e) {
     e.preventDefault();
-    const data = {title, category, description, price, salePrice, images};
+    const data = {title, category, description, price, salePrice, images, properties: productProperties};
     if (_id) {
       await axios.put('/api/products', {...data, _id});
     } else {
@@ -77,9 +83,9 @@ export default function ProductForm({
   }
 
   async function deleteImage(deleteLink) {
-
+    // console.log(deleteLink.split('/').pop());
     // TODO delete image from s3 bucked
-    // const res = await axios.delete('/api/delete/1684350227288.png');
+    // const res = await axios.delete('/api/delete?key=' + deleteLink.split('/').pop());
 
     setImages(oldImages => {
       const newImages = [];
@@ -92,7 +98,56 @@ export default function ProductForm({
     })
   }
 
+  async function getPropertiesToShow() {
 
+    setPropertiesToShow([]);
+
+    let haveParent = true;
+    let categoryCheck = category;
+    while (haveParent) {
+      if (categoryCheck.parent) {
+        const id = typeof(categoryCheck.parent) === "string" ? categoryCheck.parent : categoryCheck.parent._id;
+        await axios.get('/api/categories?id=' + id).then(res => {
+          setPropertiesToShow(old => {
+            return [...old, ...res.data.properties]
+          });
+          categoryCheck = res.data;
+        })
+      } else {
+        haveParent = false;
+      }
+    }
+
+    setPropertiesToShow(old => {
+      return [...old, ...category.properties].filter((a,b) => {
+        return a._id !== b._id
+      })
+    });
+
+  }
+  const properties = propertiesToShow.map((property, index) => {
+    let initialValue = '';
+    Object.keys(productProperties).forEach(key => {
+      if (key === property.name) {
+        initialValue = productProperties[key];
+      }
+    })
+
+    const propertyName = property.name;
+
+    return (
+      <label key={index} className="w-full relative flex">
+        <span className="ml-4 mb-2 block w-1/2">- {propertyName}</span>
+        <DropdownProperties 
+          items={property.values.sort()} 
+          initialItem={initialValue}
+          selectedItem={(item) => setProductProperties(old => {
+            return {...old, [propertyName]: item}
+          })}
+          className="w-1/2"/>
+      </label>
+    )
+  })
   
   return (
     <>
@@ -105,7 +160,7 @@ export default function ProductForm({
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             />
-          <label className="w-full relative">
+          <label className="mb-4 w-full relative">
             <span className="mb-2 block">Category</span>
             
             <Dropdown 
@@ -113,7 +168,10 @@ export default function ProductForm({
               initialItem={category}
               selectedItem={setCategory}/>
           </label>
-          {/* TODO category properties select */}
+
+          <span className="mb-2 block">Properties</span>
+          {properties}
+          
           <label>Description</label>
           <div className="mb-4">
             <Editor

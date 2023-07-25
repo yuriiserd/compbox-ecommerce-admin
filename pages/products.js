@@ -50,6 +50,7 @@ export default function Products() {
                 <Link className="text-stone-700" href={`/products/edit/${product._id}`}>
                   <EditIcon/>
                 </Link>
+                {/* TODO add copy function */}
                 <button onClick={() => {
                   dispatch(openDelete());
                   dispatch(setDeleteItem(product._id))
