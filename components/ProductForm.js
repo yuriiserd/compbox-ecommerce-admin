@@ -22,7 +22,7 @@ export default function ProductForm({
 }) {
 
   const [title, setTitle] = useState(existingTitle || '');
-  const [category, setCategory] = useState(existingCategory || {});
+  const [category, setCategory] = useState(existingCategory || {name: ''});
   const [description, setDescription] = useState(existingDescription || '');
   const [price, setPrice] = useState(existingPrice || '');
   const [salePrice, setSalePrice] = useState(existingSalePrice || '');
@@ -42,7 +42,9 @@ export default function ProductForm({
     axios.get('/api/categories').then(res => {
       setCategories(res.data);
     });
-    getPropertiesToShow()
+    if (category.name.length > 0) {
+      getPropertiesToShow()
+    }
   }, [category]);
 
   async function saveProduct(e) {
@@ -173,8 +175,9 @@ export default function ProductForm({
               initialItem={category}
               selectedItem={setCategory}/>
           </label>
-
-          <span className="mb-2 block">Properties</span>
+          {!!propertiesToShow.length && (
+            <span className="mb-2 block">Properties</span>
+          )}
           {properties}
           
           <label>Description</label>

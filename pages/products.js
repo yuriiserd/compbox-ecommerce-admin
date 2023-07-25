@@ -9,6 +9,9 @@ import { useDispatch, useSelector } from "react-redux";
 import Back from "@/components/Back";
 import EditIcon from "@/components/icons/EditIcon";
 import DeleteIcon from "@/components/icons/DeleteIcon";
+import Image from "next/image";
+import classNames from "classnames";
+import CopyIcon from "@/components/icons/CopyIcon";
 
 
 export default function Products() {
@@ -30,7 +33,7 @@ export default function Products() {
         <div className="table__head">
           <ul className="table-row">
             <li>Product name</li>
-            <li className="hidden md:table-cell">Categories</li>
+            <li className="hidden md:table-cell">Category</li>
             <li>Price</li>
             <li>Actions</li>
           </ul>
@@ -43,14 +46,26 @@ export default function Products() {
           )}
           {products.map(product => (
             <ul className="table-row" key={product._id}>
-              <li>{product.title}</li>
+              <li className="flex gap-2 items-top">
+                <div className="image"><Image src={product.images[0]} width={96} height={96} alt={`image`}/></div>
+                <div>{product.title}</div>
+              </li>
               <li className="hidden md:table-cell">{product.category.name}</li>
-              <li>{product.price}$</li>
+              <li>
+                <span className={classNames({
+                  crossed: product.salePrice
+                })}>{product.price}$</span> 
+                <span className={classNames("block", {
+                  hidden: !product.salePrice
+                })}>{product.salePrice}$</span></li>
               <li className="flex items-top ml-2 gap-4 border-stone-200">
                 <Link className="text-stone-700" href={`/products/edit/${product._id}`}>
                   <EditIcon/>
                 </Link>
                 {/* TODO add copy function */}
+                <button className="text-stone-700 flex">
+                  <CopyIcon/>
+                </button>
                 <button onClick={() => {
                   dispatch(openDelete());
                   dispatch(setDeleteItem(product._id))

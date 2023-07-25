@@ -68,6 +68,24 @@ label {
 .table.default {
   @apply w-full rounded-t-lg overflow-hidden border-r border-t border-l
 }
+.items-top .image img {
+  max-width: 75px;
+  width: 75px;
+}
+.crossed {
+  position: relative;
+  &::before {
+    @apply bg-red-700;
+    content: '';
+    position: absolute;
+    right: 0;
+    left: 0;
+    top: 50%;
+    height: 1px;
+    transform: translateY(-50%) rotate(-15deg);
+    transform-origin: center;
+  }
+}
 
 .popup {
   position: fixed;
