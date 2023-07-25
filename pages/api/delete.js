@@ -2,9 +2,9 @@ import { DeleteObjectCommand, S3Client } from '@aws-sdk/client-s3';
 
 const bucketName = process.env.S3_BUCKET_NAME;
 
-export default async function handle(req, res) {
+export default async function handler(req, res) {
 
-  const file = req.query.key[0];
+  const file = req.query + '';
 
   const client = new S3Client({
     region: 'us-east-1',
@@ -19,10 +19,14 @@ export default async function handle(req, res) {
     Key: file,
   };
   const command = new DeleteObjectCommand(params);
-  await client.send(command);
   
+  try {
+    const res = await client.send(command);
+    res.json(res);
+  } catch(err) {
+    res.json(err);
+  }
   
-  res.json(file);
 }
 
 export const config = {

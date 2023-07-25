@@ -7,6 +7,7 @@ import Spinner from "./Spinner";
 import { ReactSortable } from "react-sortablejs";
 import Dropdown from "./Dropdown";
 import DropdownProperties from "./DropdownProperties";
+import { DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3";
 
 
 export default function ProductForm({
@@ -83,9 +84,13 @@ export default function ProductForm({
   }
 
   async function deleteImage(deleteLink) {
-    // console.log(deleteLink.split('/').pop());
+
+    const deleteKey = deleteLink.split('/').pop();
     // TODO delete image from s3 bucked
-    // const res = await axios.delete('/api/delete?key=' + deleteLink.split('/').pop());
+    
+    await axios.delete('/api/delete?key=' + deleteKey).then(res => {
+      console.log(res);
+    });
 
     setImages(oldImages => {
       const newImages = [];
