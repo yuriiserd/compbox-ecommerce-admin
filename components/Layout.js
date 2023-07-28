@@ -5,13 +5,16 @@ import { useSession, signIn, signOut } from "next-auth/react"
 export default function Layout({children}) {
   const { data: session } = useSession()
   if(!session) {
-    return <>
-      <div className='bg-stone-600 h-screen flex items-center'>
-        <div className="text-center w-full">
-          <button onClick={() => signIn('google')} className="bg-white p-2 px-4 rounded-lg">Login with Google</button>
+    return (
+      <>
+        <div className='bg-stone-600 h-screen flex items-center'>
+          <div className="text-center w-full">
+            <button onClick={() => signIn('credentials')} className="bg-white p-2 px-4 mr-4 rounded-lg">Login with Credentials</button>
+            <button onClick={() => signIn('google')} className="bg-white p-2 px-4 rounded-lg">Login with Google</button>
+          </div>
         </div>
-      </div>
-    </>
+      </>
+    )
   }
   return (
     <>
