@@ -276,8 +276,8 @@ export default function Categories() {
             </div>
             <div className="table__body">
               {!categories.length && !noItemsFound && (
-                <ul className="table-row">
-                  <li className="w-full"><Spinner/></li>
+                <ul>
+                  <li><Spinner/></li>
                 </ul>
               )}
               {noItemsFound && (
@@ -294,7 +294,7 @@ export default function Categories() {
                   <ul key={category._id} className="table-row">
                     <li>{category.name}</li>
                     <li>{category.parent?.name}</li>
-                    <li className="flex gap-3 border-stone-200">
+                    <li className="flex gap-3 px-2 border-stone-200">
                       <button title="edit" onClick={() => editCategory(category)} className="text-stone-700">
                         <EditIcon/>
                       </button>

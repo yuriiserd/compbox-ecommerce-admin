@@ -1,34 +1,38 @@
 import NextAuth from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
+import CredentialsProvider from 'next-auth/providers/credentials'
 import { MongoDBAdapter } from "@next-auth/mongodb-adapter"
 import clientPromise from "@/lib/mongodb"
-import CredentialsProvider from 'next-auth/providers/credentials'
 
 export default NextAuth({
+  // session: {
+  //   strategy: 'jwt'
+  // },
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_ID,
       clientSecret: process.env.GOOGLE_SECRET
     }),
     CredentialsProvider({
-      name: "Credentials",
-      credentials: {
-        username: { label: "Username", type: "text" },
-        password: { label: "Password", type: "password" }
-      },
+      type: "credentials",
+      credentials: {},
       async authorize(credentials, req) {
         
-        const {username, password} = credentials;
+        const {email, password} = credentials;
 
-        const user = { id: "64c3840890a87ee5ddc39f94", name: "admin", email: "admin@test.com" }
-        console.log(credentials, req)
-        if (username === "admin" && password === "123") {
+
+        const user = {"_id":{"$oid":"643ffd5faf6de2e6828e36cf"},"name":"Yurii Serduchenko","email":"yuriiserd@gmail.com","image":"https://lh3.googleusercontent.com/a/AGNmyxYQ54_Y_Dlcw7SPuI7O_BRuD2wMSdbxBgmD9XVo=s96-c","emailVerified":null};
+
+        if (email === "yuriiserd@gmail.com" && password === "lRZZ13B@%9KM") {
           return user
         } else {
-          return null
+          throw new Error('invalid credentials')
         }
       }
     })
   ],
-  adapter: MongoDBAdapter(clientPromise),
+  pages: {
+    signIn: '/auth/signin',
+  },
+  // adapter: MongoDBAdapter(clientPromise),
 })

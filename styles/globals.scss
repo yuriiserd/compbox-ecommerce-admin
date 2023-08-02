@@ -43,23 +43,28 @@ label {
   }
 } 
 .table__head .table-row {
-  @apply bg-stone-200;
+  @apply bg-stone-200 text-left;
 }
 .table-row {
   @apply  border-b border-stone-200  w-full flex justify-between;
   li {
     @apply border-l border-stone-200 p-2 py-3;
     &:nth-child(1) {
-      width: 40%;
+      width: 100%;
       @apply border-l-0
     }
     &:nth-child(2) {
-      width: 40%;
+      width: 100%;
       text-align: left;
     }
     &:nth-child(3) {
-      width: 20%;
-      max-width: 70px;
+      width: 100%;
+      text-align: left;
+      max-width: 100px;
+    }
+    &:last-child {
+      width: 100%;
+      max-width: 120px;
       text-align: left;
     }
   }
@@ -71,6 +76,9 @@ label {
 .items-top .image img {
   max-width: 75px;
   width: 75px;
+  @media (max-width: 992px) {
+    display: none;
+  }
 }
 .crossed {
   position: relative;

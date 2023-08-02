@@ -1,20 +1,30 @@
 import Nav from "@/components/Nav"
 import Image from "next/image"
 import { useSession, signIn, signOut } from "next-auth/react"
+import { useRouter } from "next/router";
 
 export default function Layout({children}) {
-  const { data: session } = useSession()
+  const { data: session } = useSession();
+  const router = useRouter();
+
+  async function signInRedirect() {
+    router.push('/auth/signin');
+  }
+
   if(!session) {
-    return (
-      <>
-        <div className='bg-stone-600 h-screen flex items-center'>
-          <div className="text-center w-full">
-            <button onClick={() => signIn('credentials')} className="bg-white p-2 px-4 mr-4 rounded-lg">Login with Credentials</button>
-            <button onClick={() => signIn('google')} className="bg-white p-2 px-4 rounded-lg">Login with Google</button>
-          </div>
-        </div>
-      </>
-    )
+
+    signInRedirect()
+
+    // return (
+    //   <>
+    //     <div className='bg-stone-600 h-screen flex items-center'>
+    //       <div className="text-center w-full">
+    //         <button onClick={() => signIn('credentials')} className="bg-white p-2 px-4 mr-4 rounded-lg">Login with Credentials</button>
+    //         <button onClick={() => signIn('google')} className="bg-white p-2 px-4 rounded-lg">Login with Google</button>
+    //       </div>
+    //     </div>
+    //   </>
+    // )
   }
   return (
     <>
