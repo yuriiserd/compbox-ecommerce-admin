@@ -28,7 +28,12 @@ export default function Products() {
   
   return (
     <Layout>
-      <Link className="btn" href={'/products/new'}>Add new product</Link>
+      <div className="flex justify-between items-center gap-4">
+        <Link className="btn min-w-fit" href={'/products/new'}>Add new product</Link>
+        {/* TODO create search and filter */}
+        <input className="w-96 mb-0" type="text" placeholder="search"/>
+      </div>
+
       <div className="table default mt-6">
         <div className="table__head">
           <ul className="table-row">
@@ -40,7 +45,7 @@ export default function Products() {
         </div>
         <div className="table__body">
           {!products.length && (
-            <ul className="table-row">
+            <ul>
               <li><Spinner/></li>
             </ul>
           )}
@@ -57,8 +62,9 @@ export default function Products() {
                 })}>{product.price}$</span> 
                 <span className={classNames("block", {
                   hidden: !product.salePrice
-                })}>{product.salePrice}$</span></li>
-              <li className="flex items-top ml-2 gap-4 border-stone-200">
+                })}>{product.salePrice}$</span>
+              </li>
+              <li className="flex items-top gap-4 border-stone-200 ">
                 <Link className="text-stone-700" href={`/products/edit/${product._id}`}>
                   <EditIcon/>
                 </Link>
