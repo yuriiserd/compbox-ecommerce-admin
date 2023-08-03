@@ -6,7 +6,6 @@ import Spinner from "@/components/Spinner";
 import DeletePopup from "@/components/DeletePopup"
 import { openDelete, setDeleteItem, selectOpenPopupDelete } from "@/slices/deleteSlice";
 import { useDispatch, useSelector } from "react-redux";
-import Back from "@/components/Back";
 import EditIcon from "@/components/icons/EditIcon";
 import DeleteIcon from "@/components/icons/DeleteIcon";
 import Image from "next/image";
@@ -31,7 +30,7 @@ export default function Products() {
       <div className="flex justify-between items-center gap-4">
         <Link className="btn min-w-fit" href={'/products/new'}>Add new product</Link>
         {/* TODO create search and filter */}
-        <input className="w-96 mb-0" type="text" placeholder="search"/>
+        <input className="w-96 mb-0 max-w-fit" type="text" placeholder="search"/>
       </div>
 
       <div className="table default mt-6">
@@ -56,7 +55,7 @@ export default function Products() {
                 <div>{product.title}</div>
               </li>
               <li className="hidden md:table-cell">{product.category.name}</li>
-              <li>
+              <li className="w-10">
                 <span className={classNames({
                   crossed: product.salePrice
                 })}>{product.price}$</span> 
@@ -64,7 +63,7 @@ export default function Products() {
                   hidden: !product.salePrice
                 })}>{product.salePrice}$</span>
               </li>
-              <li className="flex items-top gap-4 border-stone-200 ">
+              <li className="flex items-top gap-4 max-sm:gap-2 max-sm:flex-col w-20 border-stone-200 ">
                 <Link className="text-stone-700" href={`/products/edit/${product._id}`}>
                   <EditIcon/>
                 </Link>

@@ -60,12 +60,32 @@ label {
     &:nth-child(3) {
       width: 100%;
       text-align: left;
-      max-width: 100px;
+      max-width: 80px;
     }
     &:last-child {
       width: 100%;
       max-width: 120px;
       text-align: left;
+    }
+    @media (max-width: 641px) {
+      &:nth-child(1) {
+        width: 100%;
+        @apply border-l-0
+      }
+      &:nth-child(2) {
+        width: 100%;
+        text-align: left;
+      }
+      &:nth-child(3) {
+        width: 100%;
+        text-align: left;
+        max-width: 70px;
+      }
+      &:last-child {
+        width: 100%;
+        max-width: 100px;
+        text-align: left;
+      }
     }
   }
 }
@@ -176,5 +196,42 @@ label {
   outline: none;
   &.open {
     transform: rotateX(180deg);
+  }
+}
+
+.navigation {
+  z-index: 100;
+}
+@media (max-width: 641px) {
+  .navigation {
+    @apply -translate-x-full transition-all;
+    &.open {
+      @apply translate-x-0;
+    }
+  }
+}
+.hamburger {
+  @apply absolute -right-14 top-5 flex-col justify-between transition-all p-2 hidden max-sm:flex;
+  width: 45px;
+  height: 34px;
+  span {
+    @apply bg-stone-600 block w-full transition-all;
+    width: 100%;
+    height: 2px;
+  }
+  &.open {
+    @apply right-4 top-5;
+    width: 37px;
+    span:nth-child(1) {
+      @apply rotate-45 relative;
+      top: 7.5px;
+    }
+    span:nth-child(2) {
+      @apply hidden
+    }
+    span:nth-child(3) {
+      @apply -rotate-45 relative;
+      bottom: 8px;
+    }
   }
 }

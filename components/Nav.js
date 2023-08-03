@@ -5,8 +5,12 @@ import { useRouter } from "next/router";
 import logo from "@/public/logo.svg";
 import logoText from "@/public/logo-text.svg";
 import css from "./Nav.module.scss"
+import { useState } from "react";
+import classNames from "classnames";
 
 export default function Nav() {
+
+  const [isOpen, setIsOpen] = useState(false)
 
   const router = useRouter();
   const {pathname} = router;
@@ -17,7 +21,18 @@ export default function Nav() {
   }
 
   return (
-    <aside className="max-w-xs bg-stone-200 px-4 min-h-screen">
+    <aside className={classNames("max-w-md bg-stone-200 px-4 min-h-screen max-sm:fixed navigation", {
+      open: isOpen
+    })}>
+      <button 
+        onClick={() => setIsOpen(!isOpen)} 
+        className={classNames("hamburger", {
+          open: isOpen
+        })}>
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
       <Link href={'/'} className="flex items-center py-5 gap-4 flex-col">
         <Image src={logo} width={55} height={55} alt="logo"/>
         <Image src={logoText} width={202} height={34} alt="freedom fighter"/>
