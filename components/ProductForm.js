@@ -15,6 +15,7 @@ export default function ProductForm({
   title: existingTitle, 
   category: existingCategory,
   description: existingDescription,
+  content: existingContent,
   price: existingPrice,
   salePrice: existingSalePrice,
   images: existingImages,
@@ -24,6 +25,7 @@ export default function ProductForm({
   const [title, setTitle] = useState(existingTitle || '');
   const [category, setCategory] = useState(existingCategory || {name: ''});
   const [description, setDescription] = useState(existingDescription || '');
+  const [content, setContent] = useState(existingContent || '');
   const [price, setPrice] = useState(existingPrice || '');
   const [salePrice, setSalePrice] = useState(existingSalePrice || '');
   const [productProperties, setProductProperties] = useState(existingProperties || []);
@@ -49,7 +51,7 @@ export default function ProductForm({
 
   async function saveProduct(e) {
     e.preventDefault();
-    const data = {title, category, description, price, salePrice, images, properties: productProperties};
+    const data = {title, category, description, content, price, salePrice, images, properties: productProperties};
     if (_id) {
       await axios.put('/api/products', {...data, _id});
     } else {
@@ -179,14 +181,20 @@ export default function ProductForm({
             <span className="mb-2 block">Properties</span>
           )}
           {properties}
-          
           <label>Description</label>
+          <textarea 
+            type="text" 
+            placeholder="Description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            />
+          <label>Content</label>
           <div className="mb-4">
             <Editor
               apiKey="ivtbutcg9s0rhvxlmveqt2ybncqhfkd9wap0gme93w5uz395"
-              onChange={() => setDescription(editorRef.current.getContent())}
+              onChange={() => setContent(editorRef.current.getContent())}
               onInit={(evt, editor) => editorRef.current = editor}
-              initialValue={description}
+              initialValue={content}
               init={{
                 height: 500,
                 menubar: true,
