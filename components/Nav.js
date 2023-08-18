@@ -35,7 +35,8 @@ export default function Nav() {
         </button>
       <Link href={'/'} className="flex items-center py-5 gap-4 flex-col">
         <Image src={logo} width={55} height={55} alt="logo"/>
-        <Image src={logoText} width={202} height={34} alt="freedom fighter"/>
+        <small className="text-xs text-center">yes! its Rozetka stole our logo</small>
+        <Image src={logoText} width={202} height={34} alt="CompHub"/>
       </Link>
       <nav>
         <ul>

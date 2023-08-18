@@ -6,11 +6,17 @@ html, body, * {
   scroll-behavior: smooth;
 }
 
-input {
+input,
+textarea {
   @apply border-2 px-2 py-1 border-stone-200 rounded-md w-full mb-4 mr-4;
 }
+textarea {
+  height: 180px;
+}
 input:focus-visible,
-input:focus {
+input:focus,
+textarea:focus-visible,
+textarea:focus {
   @apply border-stone-500;
   outline: unset;
 }
