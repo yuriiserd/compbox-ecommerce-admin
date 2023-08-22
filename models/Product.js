@@ -9,6 +9,8 @@ const ProductSchema = new Schema({
   salePrice: {type: Number},
   images: [{type: String}],
   properties: {type: Object},
+}, {
+  timestamps: true,
 });
 
 export const Product = models.Product || model('Product', ProductSchema);

@@ -10,7 +10,7 @@ export default async function handler(req, res) {
     if (req.query?.id) {
       res.json(await Product.findOne({_id:req.query.id}).populate('category'))
     } else {
-      res.json(await Product.find().populate('category'));
+      res.json(await Product.find({}, null, {sort: {'_id': -1}}).populate('category'));
     }
   }
 
