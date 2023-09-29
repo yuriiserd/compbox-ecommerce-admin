@@ -3,7 +3,6 @@ import Link from "next/link";
 import { signOut } from "next-auth/react";
 import { useRouter } from "next/router";
 import logo from "@/public/logo.svg";
-import logoText from "@/public/logo-text.svg";
 import css from "./Nav.module.scss"
 import { useState } from "react";
 import classNames from "classnames";
@@ -36,7 +35,6 @@ export default function Nav() {
       <Link href={'/'} className="flex items-center py-5 gap-4 flex-col">
         <Image src={logo} width={55} height={55} alt="logo"/>
         <small className="text-xs text-center">yes! its Rozetka stole our logo</small>
-        <Image src={logoText} width={202} height={34} alt="CompHub"/>
       </Link>
       <nav>
         <ul>
