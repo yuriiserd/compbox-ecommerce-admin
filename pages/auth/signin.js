@@ -22,7 +22,7 @@ export default function SignIn() {
       password: userInfo.password,
       redirect: false
     })
-    console.log(res, session, status)
+    // console.log(res, session, status)
     if (res.status === 200) {
       // session.user = res
       router.push('/')

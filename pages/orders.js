@@ -45,8 +45,6 @@ useEffect(() => {
    })
 }, [])
 
-console.log(orders)
-
  return (
    <Layout>
       <h1>Orders</h1>

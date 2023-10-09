@@ -92,9 +92,7 @@ export default function ProductForm({
     const deleteKey = deleteLink.split('/').pop();
     // TODO delete image from s3 bucked
     
-    await axios.delete('/api/delete?key=' + deleteKey).then(res => {
-      console.log(res);
-    });
+    await axios.delete('/api/delete?key=' + deleteKey);
 
     setImages(oldImages => {
       const newImages = [];
