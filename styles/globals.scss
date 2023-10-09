@@ -51,8 +51,14 @@ label {
 .table__head .table-row {
   @apply bg-stone-200 text-left;
 }
+.table__body {
+  @apply  border-b border-stone-200;
+}
 .table-row {
   @apply  border-b border-stone-200  w-full flex justify-between;
+  &:last-child {
+    @apply border-b-0;
+  }
   li {
     @apply border-l border-stone-200 p-2 py-3;
     &:nth-child(1) {
