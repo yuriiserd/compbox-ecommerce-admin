@@ -16,6 +16,7 @@ import CopyIcon from "@/components/icons/CopyIcon";
 export default function Products() {
 
   const [timeoutSearch, setTimeoutSearch] = useState(null);
+  const [searchValue, setSearchValue] = useState('');
   const [products, setProducts] = useState([]);
   const [noItemsFound, setNoItemsFound] = useState(false);
   const openPopup = useSelector(selectOpenPopupDelete);
@@ -24,6 +25,10 @@ export default function Products() {
   useEffect(() => {
     getProducts()
   }, [openPopup])
+
+  useEffect(() => {
+    searchProducts(searchValue)
+  }, [searchValue])
 
   async function getProducts() {
     await axios.get('/api/products').then(response => {
@@ -51,10 +56,13 @@ export default function Products() {
   // reduce server requests
   function searchProducts(name) {
 
+    // console.log('search')
+
     clearTimeout(timeoutSearch);
     setTimeoutSearch(setTimeout(() => {
       axios.get('/api/products?name='+name).then(response => {
         setProducts(response.data);
+        // console.log('search-timeout')
         if (response.data.length === 0) {
           setNoItemsFound(true)
         } else {
@@ -75,9 +83,10 @@ export default function Products() {
         {/* TODO create search and filter */}
         <input 
           onChange={(event) => {
-            searchProducts(event.target.value);
+            setSearchValue(event.target.value);
           }}
           className="w-96 mb-0 max-w-fit mr-0" 
+          value={searchValue}
           type="text" 
           placeholder="search"/>
       </div>
