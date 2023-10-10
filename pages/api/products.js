@@ -11,8 +11,8 @@ export default async function handler(req, res) {
       res.json(await Product.findOne({_id:req.query.id}).populate('category'))
     } else if (req.query?.name) {
       const name = req.query.name;
-      const regex = new RegExp(`/${name}/i`); // make case-insensitive query
-      res.json(await Product.find({title: {$regex: name}}, null, {sort: {'createdAt': -1}}).populate('category'));
+      const regex = new RegExp(name,'i'); // make case-insensitive query
+      res.json(await Product.find({title: {$regex: regex}}, null, {sort: {'createdAt': -1}}).populate('category'));
     } else {
       res.json(await Product.find({}, null, {sort: {'createdAt': -1}}).populate('category'));
     }
