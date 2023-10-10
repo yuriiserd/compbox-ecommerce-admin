@@ -1,51 +1,29 @@
 import Layout from "@/components/Layout";
 import EditIcon from "@/components/icons/EditIcon"
 import DeleteIcon from "@/components/icons/DeleteIcon"
+import DeletePopup from "@/components/DeletePopup"
+import { openDelete, setDeleteItem, selectOpenPopupDelete } from "@/slices/deleteSlice";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Link from "next/link";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function Orders() {
 
    const [orders, setOrders] = useState([])
+   const openPopup = useSelector(selectOpenPopupDelete);
 
-const categories = [
-   {
-      _id:2,
-      name: 'test',
-      parent: {
-         name: 'ttt'
-      }
-   },
-   {
-      _id:3,
-      name: 'test1',
-      parent: {
-         name: 'ttt'
-      }
-   },
-   {
-      _id:4,
-      name: 'test2',
-      parent: {
-         name: 'ttt'
-      }
-   },
-   {
-      _id:5,
-      name: 'test3',
-      parent: {
-         name: 'ttt'
-      }
-   }
-]
-useEffect(() => {
-   axios.get('/api/orders').then(res => {
-      setOrders(res.data)
-   })
-}, [])
+   const dispatch = useDispatch();
 
- return (
+   useEffect(() => {
+      axios.get('/api/orders').then(res => {
+         setOrders(res.data)
+      })
+   }, [openPopup])
+
+
+
+return (
    <Layout>
       <h1>Orders</h1>
       <div className="table default mt-6">
@@ -59,10 +37,11 @@ useEffect(() => {
          <div className="table__body">
             
             {orders.map((order) => {
+               console.log(order);
                const time = new Date(order.createdAt).toLocaleString();
                let totalPrice = 0;
                order.product_items.forEach(item => {
-                  totalPrice += item.price_data.unit_amount / 100;
+                  totalPrice += item.price_data.unit_amount * item.quantity / 100;
                })
                return (
                   <ul key={order._id} className="table-row">
@@ -86,7 +65,10 @@ useEffect(() => {
                         <button title="edit" onClick={() => {}} className="text-stone-700">
                         <EditIcon/>
                         </button>
-                        <button title="delete" onClick={() => {}} className="text-stone-700">
+                        <button title="delete" onClick={() => {
+                           dispatch(openDelete());
+                           dispatch(setDeleteItem(order._id))
+                        }} className="text-stone-700">
                         <DeleteIcon/>
                         </button>
                      </li>
@@ -95,7 +77,8 @@ useEffect(() => {
             })}
          </div>
       </div>
+      <DeletePopup collection={'orders'}/>
    </Layout>
- )
+)
    
 }
