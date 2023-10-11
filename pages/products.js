@@ -11,6 +11,7 @@ import DeleteIcon from "@/components/icons/DeleteIcon";
 import Image from "next/image";
 import classNames from "classnames";
 import CopyIcon from "@/components/icons/CopyIcon";
+import ProductIcon from "@/components/icons/ProductIcon";
 
 
 export default function Products() {
@@ -114,7 +115,15 @@ export default function Products() {
           {products.map(product => (
             <ul className="table-row" key={product._id}>
               <li className="flex gap-2 items-top">
-                <div className="image"><Image src={product.images[0]} width={96} height={96} alt={`image`}/></div>
+                <div className="image w-20">
+                  <Link href={`/products/edit/${product._id}`}>
+                    {product.images[0] ? (
+                      <Image src={product.images[0]} width={96} height={96} alt={product.title}/>
+                    ) : (
+                      <ProductIcon/>
+                    )}
+                  </Link>
+                </div>
                 <div>{product.title}</div>
               </li>
               <li className="hidden md:table-cell">{product.category.name}</li>
