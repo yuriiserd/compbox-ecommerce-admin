@@ -108,6 +108,8 @@ label {
 .items-top .image img {
   max-width: 75px;
   width: 75px;
+}
+.items-top .image {
   @media (max-width: 992px) {
     display: none;
   }
