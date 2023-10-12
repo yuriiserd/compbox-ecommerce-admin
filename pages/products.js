@@ -145,7 +145,7 @@ export default function Products() {
                 <button onClick={() => {
                   dispatch(openDelete());
                   dispatch(setDeleteItem(product._id))
-                }} className="text-stone-700 flex">
+                }} className="text-red-900 flex">
                   <DeleteIcon/>
                 </button>
               </li>

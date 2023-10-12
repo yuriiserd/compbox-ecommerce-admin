@@ -82,7 +82,7 @@ return (
                            <small> - ${item.price_data.unit_amount / 100} </small>
                         </div>
                      ))}</li>
-                     {/* TODO edit, delete function. add new order page and edit page */}
+                     
                      <li className="flex gap-3 px-2 max-sm:gap-2 border-stone-200 items-center">
                         <Link className="text-stone-700" href={`/orders/edit/${order._id}`}>
                            <EditIcon/>
@@ -90,8 +90,8 @@ return (
                         <button title="delete" onClick={() => {
                            dispatch(openDelete());
                            dispatch(setDeleteItem(order._id))
-                        }} className="text-stone-700">
-                        <DeleteIcon/>
+                        }} className="text-red-900">
+                           <DeleteIcon/>
                         </button>
                      </li>
                   </ul>
