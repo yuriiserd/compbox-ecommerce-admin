@@ -4,12 +4,12 @@ import { useRouter } from "next/router";
 import Image from "next/image";
 import Spinner from "./Spinner";
 import { ReactSortable } from "react-sortablejs";
-import Dropdown from "./Dropdown";
 import Link from "next/link";
 import DeleteIcon from "./icons/DeleteIcon";
 import CopyIcon from "./icons/CopyIcon";
 import CheckIcon from "./icons/CheckIcon";
 import Loading from "./Loading";
+import ProductIcon from "./icons/ProductIcon";
 
 
 export default function OrderForm({
@@ -31,6 +31,11 @@ export default function OrderForm({
   const [products, setProducts] = useState(existingProducts || []);
   const [zip, setZip] = useState(existingZip || '');
 
+  const [allProducts, setAllProducts] = useState([]);
+  const [searchValue, setSearchValue] = useState('');
+  const [timeoutSearch, setTimeoutSearch] = useState(null);
+  const [noItemsFound, setNoItemsFound] = useState(false);
+
   const [totalPrice, setTotalPrice] = useState(0);
   const [paymentUrl, setPaymentUrl] = useState('');
   const [goToOrders, setGoToOrders] = useState(false);
@@ -48,11 +53,39 @@ export default function OrderForm({
   },[paymentUrl])
 
   useEffect(() => {
+    axios.get('/api/products').then(response => {
+      setAllProducts(response.data)
+    })
+  }, [])
+
+  useEffect(() => {
     updateTotalPrice();
     updateProductsIds();
     setCopied(false);
   }, [products])
+
+  useEffect(() => {
+    searchProducts(searchValue);
+  },[searchValue])
   
+  function searchProducts(search) {
+
+    // console.log('search')
+
+    clearTimeout(timeoutSearch);
+    setTimeoutSearch(setTimeout(() => {
+      axios.get('/api/products?search='+search).then(response => {
+        setAllProducts(response.data);
+        // console.log('search-timeout')
+        if (response.data.length === 0) {
+          setNoItemsFound(true)
+        } else {
+          setNoItemsFound(false)
+        }
+      });
+    }, 500))
+    
+  }
 
   async function saveOrder(e) {
     e.preventDefault();
@@ -160,7 +193,41 @@ export default function OrderForm({
     });
     setRequestInProgress(false)
   }
+  async function addProduct(productToAdd) {
+    setProducts(products => {
+      const updatedProducts = [];
+      let notFound = true;
+      
+      products.forEach(product => {
 
+        if (product.price_data.product_data.id === productToAdd._id) {
+          updatedProducts.push({
+            quantity: product.quantity + 1,
+            price_data: product.price_data
+          })
+          notFound = false; //found productToAdd so no need to add new  
+        } else {
+          updatedProducts.push(product)
+        }
+      })
+
+      if (notFound) { // add new product to list if not found this product in iteration above
+        updatedProducts.push({
+          quantity: 1,
+          price_data: {
+            currency: "USD",
+            product_data: {
+              id: productToAdd._id,
+              name: productToAdd.title
+            },
+            unit_amount: productToAdd.salePrice ? productToAdd.salePrice * 100 : productToAdd.price * 100,
+          }
+        })
+      }
+
+      return updatedProducts;
+    })
+  }
   return (
     <>
       <div className="form">
@@ -177,7 +244,7 @@ export default function OrderForm({
           <label>Email</label>
           <input 
             type="email" 
-            placeholder="Name"
+            placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
@@ -214,9 +281,8 @@ export default function OrderForm({
           <button type="submit" onClick={(e) => saveOrder(e)} className="btn ">{_id ? 'Save' : 'Add Order'}</button>
         </div>
         <div className="products">
-          {/* TODO Stripe payment link */}
           <div className="flex items-center gap-4 mb-4">
-            <h3 className="text-xl">Products</h3>
+            <h3 className="text-xl">Order products</h3>
             {!!products.length && (
               <button className="btn btn_white flex gap-2" onClick={() => {
               getPaymentUrl();
@@ -275,10 +341,36 @@ export default function OrderForm({
 
           <hr/>
           <br/>
-
+          <h3 className="text-xl mb-3">Add products to order</h3>
+          <input 
+            onChange={(event) => {
+              setSearchValue(event.target.value);
+            }}
+            className="w-96 mb-8 max-w-fit mr-0 ml-auto" 
+            value={searchValue}
+            type="text" 
+            placeholder="search"/>
           <div className="flex flex-wrap gap-2">
-            TODO select list of site products. <br/>
-            Ability to add more products to order
+            {allProducts.map(product => (
+              <div className="w-full" key={product._id}>
+                <div className="flex mb-2 items-center gap-4">
+                  <Link className="w-20 flex justify-center" href={`/products/edit/${product._id}`}>
+                    {product.images[0] ? (
+                      <Image src={product.images[0]} width={50} height={50} alt={product.title}/>
+                    ) : (
+                      <div>
+                        <ProductIcon/>
+                      </div>
+                    )}
+                  </Link>
+                  <Link className="text-blue-700 hover:underline" href={`/products/edit/${product._id}`}>
+                    <p>{product.properties.Brand} {product.title}</p>
+                  </Link>
+                  <button onClick={() => addProduct(product)} className="ml-auto btn btn_white btn_small py-1">Add</button>
+                </div>
+                <hr/>
+              </div>
+            ))}
           </div>
         </div>
       </div>

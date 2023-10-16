@@ -66,6 +66,9 @@ return (
                return (
                   <ul key={order._id} className="table-row">
                      <li>
+                        <span className={`${order.paid ? 'bg-green-500': 'bg-red-500'} px-2 mr-2 mb-1 inline-block rounded-md text-white`}>
+                           {order.paid ? 'Paid' : 'Not Paid'} 
+                        </span>
                         <span>{time}</span><br/>
                         <strong>$ {totalPrice}</strong><br/>
                         {order.name}<br/>

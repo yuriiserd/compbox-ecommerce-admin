@@ -61,7 +61,7 @@ export default function Dropdown(props) {
         <input
           className="mb-0 mr-0"
           type="text"
-          placeholder="Parent Category"
+          placeholder={props.placeholder}
           onChange={ev => {
             setIsVisibleDropdown(true);
             findItemByName(ev.target.value);

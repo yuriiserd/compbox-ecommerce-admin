@@ -9,10 +9,10 @@ export default async function handler(req, res) {
   if (method === "GET") {
     if (req.query?.id) {
       res.json(await Product.findOne({_id:req.query.id}).populate('category'))
-    } else if (req.query?.name) {
-      const name = req.query.name;
-      const regex = new RegExp(name,'i'); // make case-insensitive query
-      res.json(await Product.find({title: {$regex: regex}}, null, {sort: {'createdAt': -1}}).populate('category'));
+    } else if (req.query?.search) {
+      const search = req.query.search;
+      const regex = new RegExp(search,'i'); // make case-insensitive query
+      res.json(await Product.find({searchQuery: {$regex: regex}}, null, {sort: {'createdAt': -1}}).populate('category'));
     } else {
       res.json(await Product.find({}, null, {sort: {'createdAt': -1}}).populate('category'));
     }
@@ -20,15 +20,26 @@ export default async function handler(req, res) {
 
   if (method === "POST") {
     const {title, category, description, content, price, salePrice, images, properties} = req.body;
+    const categoryName = await Category.findOne({_id: category});
     const productDoc = await Product.create({
-      title, category, description, content, price, salePrice, images, properties
+      title, 
+      category, 
+      searchQuery: `${categoryName.name || ''} ${title} ${properties.Brand || ''}`, 
+      description, 
+      content, price, salePrice, images, properties
     })
     res.json(productDoc);
   }
 
   if (method === "PUT") {
     const {title, category, description, content, price, salePrice, images, properties, _id} = req.body;
-    await Product.updateOne({_id}, {title, category, description, content, price, salePrice, images, properties});
+    const categoryName = await Category.findOne({_id: category});
+    await Product.updateOne({_id}, {
+      title, 
+      category, 
+      searchQuery: `${categoryName.name || ''} ${title} ${properties.Brand || ''}`, 
+      description, 
+      content, price, salePrice, images, properties});
     res.json(true);
   }
 
