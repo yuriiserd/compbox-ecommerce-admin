@@ -55,13 +55,13 @@ export default function Products() {
   }
   // timeout for search optimization
   // reduce server requests
-  function searchProducts(name) {
+  function searchProducts(search) {
 
     // console.log('search')
 
     clearTimeout(timeoutSearch);
     setTimeoutSearch(setTimeout(() => {
-      axios.get('/api/products?name='+name).then(response => {
+      axios.get('/api/products?search='+search).then(response => {
         setProducts(response.data);
         // console.log('search-timeout')
         if (response.data.length === 0) {
@@ -124,7 +124,7 @@ export default function Products() {
                     )}
                   </Link>
                 </div>
-                <div>{product.title}</div>
+                <div>{product.properties["Brand"]} {product.title}</div>
               </li>
               <li className="hidden md:table-cell">{product.category.name}</li>
               <li className="w-10">

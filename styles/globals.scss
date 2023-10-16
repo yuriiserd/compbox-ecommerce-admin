@@ -44,6 +44,12 @@ label {
       @apply btn;
     }
   }
+  &_small{
+    @apply py-0.5 px-2;
+    &:hover {
+      @apply py-0.5 px-2;
+    }
+  }
   &:disabled {
     @apply bg-stone-400 
   }

@@ -46,27 +46,41 @@ export default async function handler(req, res) {
       })
     }
   }
-  
-  const orderDoc = await Order.updateOne({_id},{
-    product_items, 
-    name, 
-    email, 
-    city, 
-    zip, 
-    address, 
-    country, 
-    paid: false,
-  },
-  {
-    upsert: true
+  let orderDoc = {};
+  if (_id) {
+    orderDoc = await Order.updateOne({_id},{
+      product_items, 
+      name, 
+      email, 
+      city, 
+      zip, 
+      address, 
+      country, 
+      paid: false,
+    },
+    {
+      upsert: true
+    })
+  } else {
+    orderDoc = await Order.create({
+      product_items, 
+      name, 
+      email, 
+      city, 
+      zip, 
+      address, 
+      country, 
+      paid: false,
+    })
   }
-  )
+  
+  
   const session = await stripe.checkout.sessions.create({
     line_items: product_items,
     mode: 'payment',
     customer_email: email,
-    success_url: process.env.PUBLIC_URL,
-    cancel_url: process.env.PUBLIC_URL,
+    success_url: process.env.NEXT_PUBLIC_FRONTEND_URL + '/cart?success=1',
+    cancel_url: process.env.NEXT_PUBLIC_FRONTEND_URL + '/cart?cancel=1',
     metadata: {orderId: _id || orderDoc._id.toString()},
   })
   
