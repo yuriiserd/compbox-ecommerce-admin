@@ -11,11 +11,13 @@ import { useDispatch, useSelector } from "react-redux";
 import DeleteIcon from "@/components/icons/DeleteIcon";
 import EditIcon from "@/components/icons/EditIcon";
 import { ReactSortable } from "react-sortablejs";
+import Image from "next/image";
 
 
 export default function Categories() {
 
   const [name, setName] = useState('');
+  const [image, setImage] = useState('');
   const [parent, setParent] = useState({});
 
   const [nameError, setNameError] = useState(false);
@@ -25,7 +27,6 @@ export default function Categories() {
   const [properties, setProperties] = useState([]);
 
   const [isEditing, setIsEditing] = useState(false);
-  const [isOrderUpdated, setIsOrderUpdated] = useState(true);
   const [editItem, setEditItem] = useState('');
 
   const openPopup = useSelector(selectOpenPopupDelete);
@@ -36,10 +37,6 @@ export default function Categories() {
   useEffect(() => {
     updateCategories();
   }, [openPopup, noItemsFound])
-
-  // useEffect(() => {
-  //   updateCategoriesOrderDB();
-  // }, [isOrderUpdated])
 
   function updateCategories() {
     axios.get('/api/categories').then(res => {
@@ -90,6 +87,7 @@ export default function Categories() {
   function editCategory(category) {
     categoryFormRef.current.scrollIntoView();
     setName(category.name);
+    setImage(category.image || '');
     setParent(category.parent || {});
     setProperties(category.properties || []);
     setIsEditing(true);
@@ -111,6 +109,7 @@ export default function Categories() {
 
   function cancelEdit() {
     setName('');
+    setImage('')
     setParent('');
     setProperties([]);
     setIsEditing(false);
@@ -134,14 +133,14 @@ export default function Categories() {
 
   function updateCategoriesOrder(categories) {
     setCategories(categories);
-    // setIsOrderUpdated(!isOrderUpdated);
     updateCategoriesOrderDB()
   }
 
   async function saveCategory() {
     if (validateCat(name) && !validateCat(parent.name)) return;
     if (name === '') return;
-    const data = {name, parent: {}, properties: []};
+    console.log(image, ' image');
+    const data = {name, image, parent: {}, properties: []};
 
     data.parent = parent?._id;
 
@@ -160,10 +159,20 @@ export default function Categories() {
     }
 
     setName('');
+    setImage('');
     setParent({});
-    setProperties([])
+    setProperties([]);
     updateCategories();
     setIsEditing(false);
+  }
+  async function uploadImage(e) {
+    const file = e.target?.files[0];
+    if (e.target?.files.length > 0) {
+      const data = new FormData();
+      data.append('file', file)
+      const res = await axios.post('/api/upload', data);
+      setImage(res.data.links[0])
+    }
   }
 
   return (
@@ -182,12 +191,13 @@ export default function Categories() {
             validateError();
             saveCategory();
           }} className="flex flex-col items-end gap-2">
+            
             <label className="w-full">
               <span className="mb-2 block">
                 {
                   isEditing ? 
                   'Edit Category "' + name + '"' :
-                  'New Category Name'
+                  'New Category'
                 }
               </span>
               <input
@@ -210,6 +220,29 @@ export default function Categories() {
               )}
 
             </label>
+            <div className="w-full">
+              <span className="mb-2 block">Category Image</span>
+              <div className="flex">
+                {image && (
+                  <div key={image} className="image-preview">
+                    <Image src={image} className="rounded-lg object-cover h-24 w-24 hover:object-contain" width={96} height={96} alt={`image`}/>
+                    <div className="delete" onClick={() => setImage('')}>
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </div>
+                  </div>
+                )}
+                {!image && (
+                  <label className="upload">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                    </svg>
+                    <input type="file" onChange={uploadImage} className="hidden"></input>
+                  </label>
+                )}
+              </div>
+            </div>
             <label className="w-full relative">
               <span className="mb-2 block">Parent Category</span>
 
@@ -292,7 +325,9 @@ export default function Categories() {
               >
                 {categories.map((category) => (
                   <ul key={category._id} className="table-row">
-                    <li>{category.name}</li>
+                    <li className="flex gap-2">{category?.image && (
+                      <Image src={category.image} width={50} height={50} alt={category.name}/>
+                    )} {category.name}</li>
                     <li>{category.parent?.name}</li>
                     <li className="flex gap-3 px-2 max-sm:gap-2 border-stone-200">
                       <button title="edit" onClick={() => editCategory(category)} className="text-stone-700">

@@ -6,9 +6,9 @@ export default async function handler(req, res) {
   const method = req.method;
   await mongooseConnect();
   if (method === "POST") {
-    const {address, city, country, email, products_items, name, zip} = req.body;
+    const {address, city, country, email, product_items, name, zip} = req.body;
     const orderDoc = await Order.create({
-      address, city, country, email, name, products_items, zip
+      address, city, country, email, name, product_items, zip
     })
     res.json(orderDoc);
   }

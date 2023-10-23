@@ -15,8 +15,8 @@ export default async function handler(req, res) {
   }
 
   if (method === 'POST') {
-    const {name, parent, properties} = req.body;
-    const categoryDoc = await Category.create({name, parent, properties});
+    const {name, image, parent, properties} = req.body;
+    const categoryDoc = await Category.create({name, image, parent, properties});
     res.json(categoryDoc);
   }
  
@@ -24,13 +24,13 @@ export default async function handler(req, res) {
     if (req.query?.many) {
       const categories = req.body;
       categories.forEach(async (category) => {
-        const {name, parent, properties, _id, order} = category;
-        await Category.updateOne({_id}, {name, parent, properties, order})
+        const {_id, order} = category;
+        await Category.updateOne({_id}, {order})
        })
       res.json(true);
     } else {
-      const {name, parent, properties, _id} = req.body;
-      await Category.updateOne({_id}, {name, parent, properties})
+      const {name, image, parent, properties, _id} = req.body;
+      await Category.updateOne({_id}, {name, image, parent, properties})
       res.json(true);
     }
   }
