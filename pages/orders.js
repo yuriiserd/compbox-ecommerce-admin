@@ -15,6 +15,15 @@ export default function Orders() {
    const [noItemsFound, setNoItemsFound] = useState(false)
    const openPopup = useSelector(selectOpenPopupDelete);
 
+   const statusColor = {
+      'Pending': {bg: '#FFEC8B', text: '#000000'},
+      'Processing': {bg: '#9ACD32', text: '#000000'},
+      'Backordered': {bg: '#C0C0C0', text: '#000000'},
+      'On Hold': {bg: '#6495ED', text: '#ffffff'},
+      'Delivered': {bg: '#98FB98', text: '#000000'},
+      'Cancelled': {bg: '#708090', text: '#ffffff'},
+      'Completed': {bg: '#228B22', text: '#ffffff'},
+   }
 
    const dispatch = useDispatch();
 
@@ -68,6 +77,13 @@ return (
                      <li>
                         <span className={`${order.paid ? 'bg-green-500': 'bg-red-500'} px-2 mr-2 mb-1 inline-block rounded-md text-white`}>
                            {order.paid ? 'Paid' : 'Not Paid'} 
+                        </span>
+                        {console.log(statusColor[order.status])}
+                        <span 
+                           className={` px-2 mr-2 mb-1 inline-block rounded-md`} 
+                           style={{backgroundColor: statusColor[order.status]?.bg, color: statusColor[order.status]?.text}}
+                        >
+                           {order.status} 
                         </span>
                         <span>{time}</span><br/>
                         <strong>$ {totalPrice}</strong><br/>

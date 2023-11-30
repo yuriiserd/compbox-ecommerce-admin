@@ -67,7 +67,7 @@ export default function Dropdown(props) {
             findItemByName(ev.target.value);
             filterItems(ev.target.value);
           }}
-          value={selectedItem.name || ''}
+          value={selectedItem.name ? selectedItem.name : selectedItem || ''}
         />
         <button
           className={classNames('dropdown-btn', {
@@ -87,13 +87,13 @@ export default function Dropdown(props) {
           {filteredItems.map(item => (
             <li 
               className="border-b pb-1 pt-1 last:border-none border-stone-300 cursor-pointer" 
-              key={item._id}
+              key={item._id ? item._id : item}
               onClick={() => {
                 props.selectedItem(item);
                 setSelectedItem(item);
                 setIsVisibleDropdown(false)
               }}
-            >{item.name}</li>
+            >{item.name ? item.name : item}</li>
           ))}
         </ul>
       )}

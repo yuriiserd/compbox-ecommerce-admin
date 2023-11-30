@@ -24,7 +24,7 @@ export default function SignIn() {
     })
     // console.log(res, session, status)
     if (res.status === 200) {
-      // session.user = res
+      session.user = res
       router.push('/')
     } else {
       setError(true)

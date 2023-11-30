@@ -13,7 +13,7 @@ export default function Layout({children}) {
 
   if(!session) {
 
-    signInRedirect()
+    // signInRedirect()
 
     // return (
     //   <>

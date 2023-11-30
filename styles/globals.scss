@@ -5,7 +5,26 @@
 html, body, * {
   scroll-behavior: smooth;
 }
+::-webkit-scrollbar {
+  width: 0.8rem;
+}
 
+/* Track */
+::-webkit-scrollbar-track {
+  @apply bg-stone-200;
+  border-radius: 0.8rem;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  @apply bg-stone-500;
+  border-radius: 0.8rem;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-stone-700;
+}
 input,
 textarea {
   @apply border-2 px-2 py-1 border-stone-200 rounded-md w-full mb-4 mr-4;
@@ -45,9 +64,12 @@ label {
     }
   }
   &_small{
-    @apply py-0.5 px-2;
+    @apply py-1 px-2;
+    svg {
+      @apply w-5 h-5
+    }
     &:hover {
-      @apply py-0.5 px-2;
+      @apply py-1 px-2;
     }
   }
   &:disabled {

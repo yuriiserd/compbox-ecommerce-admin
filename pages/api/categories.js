@@ -15,8 +15,18 @@ export default async function handler(req, res) {
   }
 
   if (method === 'POST') {
+    const childrens = [];
     const {name, image, parent, properties} = req.body;
-    const categoryDoc = await Category.create({name, image, parent, properties});
+    const categoryDoc = await Category.create({name, image, parent, childrens, properties});
+
+    //find parent category and update childrens - add new children 
+    const parentCategory = await Category.findOne({_id: parent});
+    
+    if (parentCategory.childrens.indexOf(categoryDoc._id) === -1) {
+      const newChildrens = [...parentCategory.childrens, categoryDoc._id]
+      await Category.updateOne({_id:parentCategory._id}, {childrens: newChildrens})
+    }
+
     res.json(categoryDoc);
   }
  
@@ -30,7 +40,23 @@ export default async function handler(req, res) {
       res.json(true);
     } else {
       const {name, image, parent, properties, _id} = req.body;
-      await Category.updateOne({_id}, {name, image, parent, properties})
+      await Category.updateOne({_id}, {name, image, parent, properties});
+
+      const categoryDoc = await Category.findOne({_id});
+
+      //find parent category and update childrens - add new children 
+      if (parent) {
+        const parentCategory = await Category.findOne({_id: parent});
+
+        if (parentCategory.childrens.length === 0) {
+          const newChildrens = [categoryDoc._id];
+          await Category.updateOne({_id:parentCategory._id}, {childrens: newChildrens})
+        } else if (parentCategory.childrens.indexOf(categoryDoc._id) === -1) {
+          const newChildrens = [...parentCategory.childrens, categoryDoc._id];
+          await Category.updateOne({_id:parentCategory._id}, {childrens: newChildrens})
+        }
+      }
+
       res.json(true);
     }
   }

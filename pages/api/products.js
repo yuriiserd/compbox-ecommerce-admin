@@ -13,6 +13,10 @@ export default async function handler(req, res) {
       const search = req.query.search;
       const regex = new RegExp(search,'i'); // make case-insensitive query
       res.json(await Product.find({searchQuery: {$regex: regex}}, null, {sort: {'createdAt': -1}}).populate('category'));
+    } else if (req.query?.limit) {
+      const limit = parseInt(req.query.limit);
+      res.json(await Product.find({}, null, {sort: {'createdAt': -1}}).limit(limit).populate('category'));
+
     } else {
       res.json(await Product.find({}, null, {sort: {'createdAt': -1}}).populate('category'));
     }
@@ -24,7 +28,7 @@ export default async function handler(req, res) {
     const productDoc = await Product.create({
       title, 
       category, 
-      searchQuery: `${categoryName.name || ''} ${title} ${properties.Brand || ''}`, 
+      searchQuery: `${properties.Brand || ''} ${title} ${categoryName.name || ''}`, 
       description, 
       content, price, salePrice, images, properties
     })
@@ -37,7 +41,7 @@ export default async function handler(req, res) {
     await Product.updateOne({_id}, {
       title, 
       category, 
-      searchQuery: `${categoryName.name || ''} ${title} ${properties.Brand || ''}`, 
+      searchQuery: `${properties.Brand || ''} ${title} ${categoryName.name || ''}`, 
       description, 
       content, price, salePrice, images, properties});
     res.json(true);
