@@ -12,12 +12,11 @@ import Image from "next/image";
 import classNames from "classnames";
 import CopyIcon from "@/components/icons/CopyIcon";
 import ProductIcon from "@/components/icons/ProductIcon";
+import Search from "@/components/Search";
 
 
 export default function Products() {
 
-  const [timeoutSearch, setTimeoutSearch] = useState(null);
-  const [searchValue, setSearchValue] = useState('');
   const [products, setProducts] = useState([]);
   const [noItemsFound, setNoItemsFound] = useState(false);
   const openPopup = useSelector(selectOpenPopupDelete);
@@ -26,10 +25,6 @@ export default function Products() {
   useEffect(() => {
     getProducts()
   }, [openPopup])
-
-  useEffect(() => {
-    searchProducts(searchValue)
-  }, [searchValue])
 
   async function getProducts() {
     await axios.get('/api/products').then(response => {
@@ -53,43 +48,15 @@ export default function Products() {
       })
     })
   }
-  // timeout for search optimization
-  // reduce server requests
-  function searchProducts(search) {
 
-    // console.log('search')
-
-    clearTimeout(timeoutSearch);
-    setTimeoutSearch(setTimeout(() => {
-      axios.get('/api/products?search='+search).then(response => {
-        setProducts(response.data);
-        // console.log('search-timeout')
-        if (response.data.length === 0) {
-          setNoItemsFound(true)
-        } else {
-          setNoItemsFound(false)
-        }
-      });
-    }, 500))
-    
-  }
  
-
-
-  
   return (
     <Layout>
       <div className="flex justify-between items-center gap-4">
         <Link className="btn min-w-fit" href={'/products/new'}>Add new product</Link>
-        {/* TODO create search and filter */}
-        <input 
-          onChange={(event) => {
-            setSearchValue(event.target.value);
-          }}
-          className="w-96 mb-0 max-w-fit mr-0" 
-          value={searchValue}
-          type="text" 
-          placeholder="search"/>
+        {/* TODO create filter */}
+        <Search setProducts={setProducts} setNoItemsFound={setNoItemsFound}/>
+        
       </div>
 
       <div className="table default mt-6">

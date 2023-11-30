@@ -139,17 +139,17 @@ export default function Categories() {
   async function saveCategory() {
     if (validateCat(name) && !validateCat(parent.name)) return;
     if (name === '') return;
-    console.log(image, ' image');
     const data = {name, image, parent: {}, properties: []};
 
     data.parent = parent?._id;
 
     if (properties.length > 0) {
-      const trimedProperties = properties;
-      trimedProperties.forEach(property => {
-        property.values = property.values.map(value => value.trimStart().trimEnd())
+      const trimedUniqueProperties = properties;
+      trimedUniqueProperties.forEach(property => {
+        property.values = property.values.map(value => value.trimStart().trimEnd()) // trim
+        property.values = [...new Set(property.values)] // remove duplicates
       });
-      data.properties = trimedProperties;
+      data.properties = trimedUniqueProperties;
     }
 
     if (isEditing) {
@@ -326,7 +326,7 @@ export default function Categories() {
                 {categories.map((category) => (
                   <ul key={category._id} className="table-row">
                     <li className="flex gap-2">{category?.image && (
-                      <Image src={category.image} width={50} height={50} alt={category.name}/>
+                      <Image className="object-contain" src={category.image} width={50} height={50} alt={category.name}/>
                     )} {category.name}</li>
                     <li>{category.parent?.name}</li>
                     <li className="flex gap-3 px-2 max-sm:gap-2 border-stone-200">

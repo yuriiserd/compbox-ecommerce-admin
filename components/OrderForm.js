@@ -10,6 +10,7 @@ import CopyIcon from "./icons/CopyIcon";
 import CheckIcon from "./icons/CheckIcon";
 import Loading from "./Loading";
 import ProductIcon from "./icons/ProductIcon";
+import Dropdown from "./Dropdown";
 
 
 export default function OrderForm({
@@ -20,7 +21,8 @@ export default function OrderForm({
   email: existingEmail, 
   name: existingName, 
   product_items: existingProducts, 
-  zip: existingZip
+  zip: existingZip,
+  status: existingStatus,
 }) {
 
   const [address, setAddress] = useState(existingAddress || '');
@@ -30,6 +32,9 @@ export default function OrderForm({
   const [name, setName] = useState(existingName || '');
   const [products, setProducts] = useState(existingProducts || []);
   const [zip, setZip] = useState(existingZip || '');
+  const [status, setStatus] = useState(existingStatus || 'Processing');
+
+  const statusOptions = ['Pending', 'Processing', 'Backordered', 'On Hold', 'Delivered', 'Cancelled', 'Completed'];
 
   const [allProducts, setAllProducts] = useState([]);
   const [searchValue, setSearchValue] = useState('');
@@ -70,13 +75,10 @@ export default function OrderForm({
   
   function searchProducts(search) {
 
-    // console.log('search')
-
     clearTimeout(timeoutSearch);
     setTimeoutSearch(setTimeout(() => {
       axios.get('/api/products?search='+search).then(response => {
         setAllProducts(response.data);
-        // console.log('search-timeout')
         if (response.data.length === 0) {
           setNoItemsFound(true)
         } else {
@@ -89,7 +91,7 @@ export default function OrderForm({
 
   async function saveOrder(e) {
     e.preventDefault();
-    const data = {address, city, country, email, name, product_items: products, zip};
+    const data = {address, city, country, email, name, product_items: products, zip, status};
     
     if (_id) {
       await axios.put('/api/orders', {...data, _id});
@@ -184,7 +186,8 @@ export default function OrderForm({
       email,
       name,
       products: productsIds,
-      zip
+      zip,
+      status,
     }
     await axios.post('/api/checkout', data).then(response => {
       if (response.data.url) {
@@ -231,9 +234,16 @@ export default function OrderForm({
   return (
     <>
       <div className="form">
-        
         <div>
-          <h3 className="text-xl mb-4">Customer details</h3>
+          <h3 className="text-xl mb-4">Status</h3>
+          <div className="relative">
+            <Dropdown 
+              items={statusOptions}
+              initialItem={status}
+              selectedItem={(item) => setStatus(item)}
+            />
+          </div>
+          <h3 className="text-xl mb-4 mt-4">Customer details</h3>
           <label>Name</label>
           <input 
             type="text" 
