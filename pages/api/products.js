@@ -16,9 +16,9 @@ export default async function handler(req, res) {
     } else if (req.query?.limit) {
       const limit = parseInt(req.query.limit);
       res.json(await Product.find({}, null, {sort: {'createdAt': -1}}).limit(limit).populate('category'));
-
     } else {
-      res.json(await Product.find({}, null, {sort: {'createdAt': -1}}).populate('category'));
+      //TODO add pagination
+      res.json(await Product.find({}, null, {sort: {'createdAt': -1}}).limit(20).populate('category'));
     }
   }
 
