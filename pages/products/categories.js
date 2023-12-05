@@ -304,7 +304,7 @@ export default function Categories() {
               <ul className="table-row">
                 <li>Category Name</li>
                 <li>Parent Category</li>
-                <li>Actions</li>
+                <li className="max-w-[100px]">Actions</li>
               </ul>
             </div>
             <div className="table__body">
@@ -329,7 +329,7 @@ export default function Categories() {
                       <Image className="object-contain" src={category.image} width={50} height={50} alt={category.name}/>
                     )} {category.name}</li>
                     <li>{category.parent?.name}</li>
-                    <li className="flex gap-3 px-2 max-sm:gap-2 border-stone-200">
+                    <li className="max-w-[100px] flex gap-3 px-2 max-sm:gap-2 border-stone-200">
                       <button title="edit" onClick={() => editCategory(category)} className="text-stone-700">
                         <EditIcon/>
                       </button>

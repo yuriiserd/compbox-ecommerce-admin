@@ -49,7 +49,7 @@ return (
             <ul className="table-row">
                <li>Info</li>
                <li>Products</li>
-               <li>Actions</li>
+               <li className="max-w-[100px]">Actions</li>
             </ul>
          </div>
          <div className="table__body">
@@ -118,7 +118,7 @@ return (
                         </div>
                      ))}</li>
                      
-                     <li className="flex gap-3 px-2 max-sm:gap-2 border-stone-200 items-center">
+                     <li className="flex gap-3 px-2 max-w-[100px] max-sm:gap-2 border-stone-200 items-center">
                         <Link className="text-stone-700" href={`/orders/edit/${order._id}`}>
                            <EditIcon/>
                         </Link>

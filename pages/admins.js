@@ -1,7 +1,7 @@
 import Layout from "@/components/Layout";
 
 
-export default function Users() {
+export default function Admins() {
  return <Layout>
     users
  </Layout>
