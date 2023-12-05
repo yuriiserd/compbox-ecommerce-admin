@@ -16,6 +16,12 @@ export default async function handler(req, res) {
     } else if (req.query?.limit) {
       const limit = parseInt(req.query.limit);
       res.json(await Product.find({}, null, {sort: {'createdAt': -1}}).limit(limit).populate('category'));
+    } else if (req.query?.category) {
+      const category = req.query.category;
+      const childCategories = await Category.find({parent: category});
+      const childCategoriesIds = childCategories.map(cat => cat._id);
+      res.json(await Product.find({category: {$in: [...childCategoriesIds, category]}}, null, {sort: {'createdAt': -1}}).populate('category'));
+      
     } else {
       //TODO add pagination
       res.json(await Product.find({}, null, {sort: {'createdAt': -1}}).limit(20).populate('category'));

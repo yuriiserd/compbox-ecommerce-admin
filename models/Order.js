@@ -10,6 +10,7 @@ const OrderSchema = new Schema({
   country: String,
   paid: Boolean,
   status: String,
+  coupon: Object,
 }, {
   timestamps: true,
 })
