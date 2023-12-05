@@ -13,27 +13,39 @@ import classNames from "classnames";
 import CopyIcon from "@/components/icons/CopyIcon";
 import ProductIcon from "@/components/icons/ProductIcon";
 import Search from "@/components/Search";
+import Dropdown from "@/components/Dropdown";
 
 
 export default function Products() {
 
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState({name: 'All Categories'});
   const [noItemsFound, setNoItemsFound] = useState(false);
   const openPopup = useSelector(selectOpenPopupDelete);
   const dispatch = useDispatch();
 
   useEffect(() => {
     getProducts()
-  }, [openPopup])
+    getCategories()
+  }, [openPopup, selectedCategory])
 
   async function getProducts() {
-    await axios.get('/api/products').then(response => {
-      setProducts(response.data);
-      if (response.data.length === 0) {
-        setNoItemsFound(true)
-      } else {
-        setNoItemsFound(false)
-      }
+    let url = '/api/products';
+    if (selectedCategory && selectedCategory._id) {
+      url += `?category=${selectedCategory._id}`;
+    }
+    const res = await axios.get(url);
+    setProducts(res.data);
+    if (res.data.length === 0) {
+      setNoItemsFound(true)
+    } else {
+      setNoItemsFound(false)
+    }
+  }
+  async function getCategories() {
+    await axios.get('/api/categories').then(response => {
+      setCategories(response.data);
     });
   }
 
@@ -49,19 +61,29 @@ export default function Products() {
     })
   }
 
- 
   return (
     <Layout>
-      <div className="flex justify-between items-center gap-4">
-        <Link className="btn min-w-fit" href={'/products/new'}>Add new product</Link>
+      <div className="flex justify-between items-center gap-4 max-w-[1100px]">
+        <Link className="btn min-w-fit mr-auto" href={'/products/new'}>Add new product</Link>
         {/* TODO create filter */}
-        <Search setProducts={setProducts} setNoItemsFound={setNoItemsFound}/>
+        
+        <div className="relative">
+          <Dropdown
+            items={categories} 
+            initialItem={selectedCategory}
+            selectedItem={setSelectedCategory}
+          />
+        </div>
+        <div>
+          <Search setProducts={setProducts} setNoItemsFound={setNoItemsFound}/>
+        </div>
         
       </div>
 
-      <div className="table default mt-6">
+      <div className="table default mt-6 max-w-[1100px]">
         <div className="table__head">
           <ul className="table-row">
+            {/* TODO sort up and down colums - name, category?, price*/}
             <li>Product name</li>
             <li className="hidden md:table-cell">Category</li>
             <li>Price</li>

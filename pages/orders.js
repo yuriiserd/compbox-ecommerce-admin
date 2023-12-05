@@ -44,7 +44,7 @@ return (
    <Layout>
       <h1>Orders</h1>
       <Link className="btn min-w-fit" href={'/orders/new'}>Add new order</Link>
-      <div className="table default mt-6">
+      <div className="table default mt-6 max-w-[1100px]">
          <div className="table__head">
             <ul className="table-row">
                <li>Info</li>
@@ -86,7 +86,23 @@ return (
                            {order.status} 
                         </span>
                         <span>{time}</span><br/>
-                        <strong>$ {totalPrice}</strong><br/>
+                        {order.coupon && (
+                           <>
+                              <span>Coupon: {order.coupon.name} - {order.coupon.percent_off}%</span><br/>
+                           </>
+                        )}
+                        
+                        {order.coupon ? (
+                           <>
+                              ${totalPrice}<span> - {order.coupon.percent_off}% = <strong>{
+                                 totalPrice - totalPrice * order.coupon.percent_off / 100
+                                 }</strong></span>
+                           </>
+                        ) : (
+                           <strong>$ {totalPrice}</strong>
+                        )}
+                        <br/>
+
                         {order.name}<br/>
                         {order.email}<br/>
                         {order.country}, {order.city}, {order.address}, {order.zip}<br/>
