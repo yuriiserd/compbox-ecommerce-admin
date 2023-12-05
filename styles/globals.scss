@@ -96,42 +96,16 @@ label {
   }
   li {
     @apply border-l border-stone-200 p-2 py-3;
+    width: 100%;
+    text-align: left;
     &:nth-child(1) {
       width: 100%;
-      @apply border-l-0
-    }
-    &:nth-child(2) {
-      width: 100%;
-      text-align: left;
-    }
-    &:nth-child(3) {
-      width: 100%;
-      text-align: left;
-      max-width: 80px;
-    }
-    &:last-child {
-      width: 100%;
-      max-width: 120px;
-      text-align: left;
+      @apply border-l-0;
     }
     @media (max-width: 641px) {
       &:nth-child(1) {
         width: 100%;
-        @apply border-l-0
-      }
-      &:nth-child(2) {
-        width: 100%;
-        text-align: left;
-      }
-      &:nth-child(3) {
-        width: 100%;
-        text-align: left;
-        max-width: 70px;
-      }
-      &:last-child {
-        width: 100%;
-        max-width: 100px;
-        text-align: left;
+        @apply border-l-0;
       }
     }
   }

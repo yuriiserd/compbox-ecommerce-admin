@@ -85,9 +85,9 @@ export default function Products() {
           <ul className="table-row">
             {/* TODO sort up and down colums - name, category?, price*/}
             <li>Product name</li>
-            <li className="hidden md:table-cell">Category</li>
-            <li>Price</li>
-            <li>Actions</li>
+            <li className="hidden md:table-cell max-w-[200px]">Category</li>
+            <li className="max-w-[100px]">Price</li>
+            <li className="max-w-[120px]">Actions</li>
           </ul>
         </div>
         <div className="table__body">
@@ -115,8 +115,8 @@ export default function Products() {
                 </div>
                 <div>{product.properties["Brand"]} {product.title}</div>
               </li>
-              <li className="hidden md:table-cell">{product.category.name}</li>
-              <li className="w-10">
+              <li className="hidden md:table-cell max-w-[200px]">{product.category.name}</li>
+              <li className="max-w-[100px]">
                 <span className={classNames({
                   crossed: product.salePrice
                 })}>{product.price}$</span> 
@@ -124,7 +124,7 @@ export default function Products() {
                   hidden: !product.salePrice
                 })}>{product.salePrice}$</span>
               </li>
-              <li className="flex items-top gap-4 max-sm:gap-2 max-sm:flex-col w-20 border-stone-200  ">
+              <li className="flex items-top gap-4 max-sm:gap-2 max-sm:flex-col w-20 border-stone-200 max-w-[120px]">
                 <Link className="text-stone-700" href={`/products/edit/${product._id}`}>
                   <EditIcon/>
                 </Link>
