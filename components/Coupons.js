@@ -10,19 +10,22 @@ export default function Coupons({setSaved}) {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    getCoupons()
+  }, []);
+
+  async function getCoupons() {
     setLoading(true);
-    axios.get('/api/coupons').then(res => {
+    await axios.get('/api/coupons').then(res => {
       setCoupons(res.data);
       setLoading(false);
     });
-  }, []);
-
+  }
   // add coupon to sripe 
   async function addCoupon() {
     if (coupon.name && coupon.percent_off) {
       await axios.post('/api/coupons', coupon).then(res => {
           if (res.data) {
-            getCoupons()
+            getCoupons();
             setSaved(true);
             setTimeout(() => {
                 setSaved(false);

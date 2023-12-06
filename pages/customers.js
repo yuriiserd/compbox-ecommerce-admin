@@ -3,6 +3,7 @@ import Spinner from "@/components/Spinner";
 import axios from "axios";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { statusColor } from "@/lib/statusColor";
 
 export default function Customers() {
 
@@ -42,12 +43,23 @@ export default function Customers() {
                       {customer.country && (<><br/>{customer.country}</>)}
                       {customer.city && (<>,{customer.city}</>)}
                     </li>
-                    <li className="max-w-[250px]">
+                    <li className="max-w-[400px]">
                       {customer.orders.length > 0 ? (
                         <>
                           {customer.orders.map(order => (
-                            <div className="mb-2" key={order}>
-                              <Link href={"/orders/edit/" + order}>{order}</Link>
+                            <div className="mb-2 flex gap-2 flex-wrap" key={order._id}>
+                              <Link href={"/orders/edit/" + order._id}>
+                                {new Date(order.updatedAt).toLocaleDateString()}
+                              </Link>
+                              <span className={`${order.paid ? 'bg-green-500': 'bg-red-500'} px-2 mr-2 mb-1 inline-block rounded-md text-white`}>
+                                {order.paid ? 'Paid' : 'Not Paid'} 
+                              </span>
+                              <span 
+                                className={` px-2 mr-2 mb-1 inline-block rounded-md`} 
+                                style={{backgroundColor: statusColor[order.status]?.bg, color: statusColor[order.status]?.text}}
+                              >
+                                {order.status} 
+                              </span>
                             </div>
                           ))}
                         </>
