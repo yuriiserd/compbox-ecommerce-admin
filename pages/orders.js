@@ -8,22 +8,13 @@ import axios from "axios";
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
 import Spinner from "@/components/Spinner";
+import { statusColor } from "@/lib/statusColor";
 
 export default function Orders() {
 
    const [orders, setOrders] = useState([]);
    const [noItemsFound, setNoItemsFound] = useState(false)
    const openPopup = useSelector(selectOpenPopupDelete);
-
-   const statusColor = {
-      'Pending': {bg: '#FFEC8B', text: '#000000'},
-      'Processing': {bg: '#9ACD32', text: '#000000'},
-      'Backordered': {bg: '#C0C0C0', text: '#000000'},
-      'On Hold': {bg: '#6495ED', text: '#ffffff'},
-      'Delivered': {bg: '#98FB98', text: '#000000'},
-      'Cancelled': {bg: '#708090', text: '#ffffff'},
-      'Completed': {bg: '#228B22', text: '#ffffff'},
-   }
 
    const dispatch = useDispatch();
 

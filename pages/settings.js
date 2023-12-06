@@ -27,16 +27,20 @@ export default function Settings() {
          setProducts(res.data);
          setInitialProducts(res.data);
       });
-      axios.get('/api/settings?name=featuredProduct').then(res => {
+      getFeatured();
+   }, []);
+
+   async function getFeatured() {
+      await axios.get('/api/settings?name=featuredProduct').then(async res => {
          if (res.data.value) {
-            axios.get('/api/products?id='+res.data.value).then(res => {
+            await axios.get('/api/products?id='+res.data.value).then(res => {
                setProduct(res.data);
                setInitialProduct(res.data);
             });
          }
          setLoading(false);
       });
-   }, []);
+   }
 
    async function saveSettings() {
       if (product._id !== initialProduct._id) {
@@ -48,6 +52,7 @@ export default function Settings() {
                }, 2000);
             }
          });
+         getFeatured()
       }
    }
    
