@@ -70,7 +70,7 @@ export default function Dropdown(props) {
           value={selectedItem.name ? selectedItem.name : selectedItem || ''}
         />
         <button
-          className={classNames('dropdown-btn', {
+          className={classNames(`dropdown-btn ${!props?.editable && 'dropdown-btn_full'}`, {
             open: isVisibleDropdown
           })}
           onClick={(e) => {
@@ -83,9 +83,9 @@ export default function Dropdown(props) {
         </button>
       </div>
       {isVisibleDropdown && (
-        <ul className="absolute z-50 bottom-0 left-0 right-0 h-60 overflow-y-scroll translate-y-full bg-stone-200 rounded-md px-2 pt-2">
+        <div className="absolute z-50 bottom-0 left-0 right-0 max-h-60 overflow-y-scroll translate-y-full bg-stone-200 rounded-md px-2 py-2">
           {filteredItems.map(item => (
-            <li 
+            <div 
               className="border-b pb-1 pt-1 last:border-none border-stone-300 cursor-pointer" 
               key={item._id ? item._id : item}
               onClick={() => {
@@ -93,9 +93,9 @@ export default function Dropdown(props) {
                 setSelectedItem(item);
                 setIsVisibleDropdown(false)
               }}
-            >{item.name ? item.name : item}</li>
+            >{item.name ? item.name : item}</div>
           ))}
-        </ul>
+        </div>
       )}
     </>
   )

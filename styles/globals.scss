@@ -112,7 +112,7 @@ label {
 }
 
 .table.default {
-  @apply w-full rounded-t-lg overflow-hidden border-r border-t border-l
+  @apply w-full rounded-t-lg border-r border-t border-l
 }
 .items-top .image img {
   max-width: 75px;
@@ -219,6 +219,9 @@ label {
   outline: none;
   &.open {
     transform: rotateX(180deg);
+  }
+  &_full {
+    @apply w-full flex justify-end pr-2;
   }
 }
 
