@@ -69,7 +69,6 @@ return (
                         <span className={`${order.paid ? 'bg-green-500': 'bg-red-500'} px-2 mr-2 mb-1 inline-block rounded-md text-white`}>
                            {order.paid ? 'Paid' : 'Not Paid'} 
                         </span>
-                        {console.log(statusColor[order.status])}
                         <span 
                            className={` px-2 mr-2 mb-1 inline-block rounded-md`} 
                            style={{backgroundColor: statusColor[order.status]?.bg, color: statusColor[order.status]?.text}}
