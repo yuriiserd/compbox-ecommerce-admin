@@ -11,8 +11,6 @@ export default function SignIn() {
 
   const router = useRouter();
 
-  const {data: session, status} = useSession();
-
   async function handleSubmit(e) {
     e.preventDefault();
     setError(false)
@@ -22,9 +20,7 @@ export default function SignIn() {
       password: userInfo.password,
       redirect: false
     })
-    // console.log(res, session, status)
     if (res.status === 200) {
-      session.user = res
       router.push('/')
     } else {
       setError(true)

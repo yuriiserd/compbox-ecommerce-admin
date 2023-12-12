@@ -14,7 +14,7 @@
   }
 }
 .activeLink {
-  @apply inactiveLink bg-stone-300 px-2 hover:gap-2 rounded-md;
+  @apply inactiveLink bg-stone-300 px-2 hover:gap-2 rounded-md -left-2 relative -mr-2;
   .submenu {
     @apply pt-2 mt-2 border-t border-stone-400 h-auto visible;
   }

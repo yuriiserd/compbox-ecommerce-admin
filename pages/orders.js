@@ -101,7 +101,7 @@ return (
                         <div key={item.price_data.product_data.id}>
                            <span>{item.quantity}</span>
                            <small> x </small>
-                           <Link className="text-blue-700 hover:underline" href={'/products/edit/'+item.price_data.product_data.id}> 
+                           <Link className="text-[#007f80] hover:underline" href={'/products/edit/'+item.price_data.product_data.id}> 
                               {item.price_data.product_data.name}
                            </Link>
                            <small> - ${item.price_data.unit_amount / 100} </small>
