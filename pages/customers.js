@@ -41,6 +41,8 @@ export default function Customers() {
                       {customer.phone && (<><br/>{customer.phone}</>)}
                       {customer.country && (<><br/>{customer.country}</>)}
                       {customer.city && (<>,{customer.city}</>)}
+                      {customer.address && (<><br/>{customer.address}</>)}
+                      {customer.zip && (<><br/>{customer.zip}</>)}
                     </li>
                     <li className="max-w-[450px]">
                       {customer.orders.length > 0 ? (
@@ -55,7 +57,7 @@ export default function Customers() {
                               discountTotal = orderTotalPrice * (1 - order.coupon.percent_off / 100)
                             }
                             return (
-                              <div className="mb-2 flex gap-2 flex-wrap" key={order._id}>
+                              <div className={`mb-2 flex gap-2 flex-wrap ${order.status === "Cancelled" && "opacity-50"}`} key={order._id}>
                                 <span className={`${order.paid ? 'bg-green-500': 'bg-red-500'} px-2 mb-1 inline-block rounded-md text-white`}>
                                   {order.paid ? 'Paid' : 'Not Paid'} 
                                 </span>

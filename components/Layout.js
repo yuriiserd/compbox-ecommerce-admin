@@ -2,29 +2,31 @@ import Nav from "@/components/Nav"
 import Image from "next/image"
 import { useSession, signIn, signOut } from "next-auth/react"
 import { useRouter } from "next/router";
+import { useEffect } from "react";
+import Spinner from "./Spinner";
 
 export default function Layout({children}) {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
 
   async function signInRedirect() {
     router.push('/auth/signin');
   }
 
-  if(!session) {
+  useEffect(() => {
+    if(status === "unauthenticated" && !session) {
+      signInRedirect()
+    }
+  }, [session, status])
 
-    // signInRedirect()
-
-    // return (
-    //   <>
-    //     <div className='bg-stone-600 h-screen flex items-center'>
-    //       <div className="text-center w-full">
-    //         <button onClick={() => signIn('credentials')} className="bg-white p-2 px-4 mr-4 rounded-lg">Login with Credentials</button>
-    //         <button onClick={() => signIn('google')} className="bg-white p-2 px-4 rounded-lg">Login with Google</button>
-    //       </div>
-    //     </div>
-    //   </>
-    // )
+  if(status === "loading") {
+    return (
+      <>
+        <div className='bg-white h-screen w-screen flex items-center justify-center'>
+          <Spinner/>
+        </div>
+      </>
+    )
   }
   return (
     <>
