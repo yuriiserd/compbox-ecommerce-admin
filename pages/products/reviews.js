@@ -2,16 +2,21 @@ import Dropdown from "@/components/Dropdown";
 import Layout from "@/components/Layout";
 import Spinner from "@/components/Spinner";
 import DeleteIcon from "@/components/icons/DeleteIcon";
+import ReloadIcon from "@/components/icons/ReloadIcon";
 import StarIcon from "@/components/icons/StarIcon";
 import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 export default function ReviewsPage() {
 
   const [loading, setLoading] = useState(false);
   const [reviews, setReviews] = useState([]);
+  const [status, setStatus] = useState("status");
+  const [noItemsFound, setNoItemsFound] = useState(false)
+
+  const spinRef = useRef(null);
 
   const statuses = useMemo(() => {
     return [
@@ -24,19 +29,27 @@ export default function ReviewsPage() {
     getReviews()
   }, [])
 
+  useEffect(() => {
+    filterByStatus(status)
+  }, [status])
+
   async function getReviews() {
     setLoading(true);
-    await axios.get("/api/reviews")
+    await axios.get("/api/reviews?status=" + status)
       .then(res => {
         setReviews(res.data);
         setLoading(false);
+        if (res.data.length === 0) {
+          setNoItemsFound(true)
+        } else {
+          setNoItemsFound(false)
+        }
       })
       .catch(err => {
         console.log(err);
         setLoading(false);
       })
   }
-
   async function updateStatus(id, status) {
     try {
       await axios.put(`/api/reviews/`, {
@@ -60,10 +73,54 @@ export default function ReviewsPage() {
       console.log(err);
     }
   }
-
+  function spin() {
+    const reload = spinRef.current
+    reload.classList.add('spin')
+    setTimeout(() => {
+       reload.classList.remove('spin')
+    }, 500);
+  }
+  function filterByStatus(status) {
+    if (status === "status") {
+      getReviews()
+    } else {
+      setLoading(true);
+      axios.get(`/api/reviews?status=${status}`)
+        .then(res => {
+          setReviews(res.data);
+          setLoading(false);
+          if (res.data.length === 0) {
+            setNoItemsFound(true)
+          } else {
+            setNoItemsFound(false)
+          }
+        })
+        .catch(err => {
+          console.log(err);
+          setLoading(false);
+        })
+    }
+  }
   return (
     <Layout>
-      <h1>Reviews</h1>
+      <div className="flex items-center gap-4 justify-between max-w-[1100px]"> 
+        <h1>Reviews</h1>
+        
+        <button className="mb-2 p-2 opacity-60 outline-none" ref={spinRef} onClick={() => {
+          getReviews()
+          spin()
+        }}>
+          <ReloadIcon/>
+        </button>
+      </div>
+      <div className="max-w-[200px] relative">
+        <Dropdown
+          items={statuses}
+          initialItem={status}
+          selectedItem={async (status) => setStatus(status)}
+          editable={false}
+        />
+      </div>
       <div className="table default mt-6 max-w-[1100px]">
           <div className="table__head">
             <ul className="table-row">
@@ -73,6 +130,11 @@ export default function ReviewsPage() {
             </ul>
           </div>
           <div className="table__body">
+            {noItemsFound && (
+              <ul>
+                <li className="text-center p-4 w-full">No reviews found</li>
+              </ul>
+            )}
             {!loading ? (
               <>
                 {reviews.map((review, i) => (
