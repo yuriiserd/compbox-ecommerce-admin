@@ -2,6 +2,7 @@ import classNames from "classnames";
 import { useEffect, useState } from "react";
 
 export default function Dropdown(props) {
+  // props - items, placeholder, selectedItem, editable, initialItem
 
   const [isVisibleDropdown, setIsVisibleDropdown] = useState(false);
   const [selectedItem, setSelectedItem] = useState({});
@@ -32,18 +33,13 @@ export default function Dropdown(props) {
     })
   }
 
-  function findItemByName(name) {
-
+  function selectItemOnChange(name) {
     items.forEach(item => {
       let itemName = item.name.toLowerCase();
       let nameLowerCase = name.toLowerCase()
       if (itemName.includes(nameLowerCase)) {
-        setSelectedItem({
-          name
-        });
         if (itemName === nameLowerCase) {
-          props.selectedItem(item);
-          setSelectedItem(item)
+          props.selectedItem(item)
         }
       }
     })
@@ -64,7 +60,7 @@ export default function Dropdown(props) {
           placeholder={props.placeholder}
           onChange={ev => {
             setIsVisibleDropdown(true);
-            findItemByName(ev.target.value);
+            selectItemOnChange(ev.target.value);
             filterItems(ev.target.value);
           }}
           value={selectedItem.name ? selectedItem.name : selectedItem || ''}
@@ -87,7 +83,7 @@ export default function Dropdown(props) {
           {filteredItems.map(item => (
             <div 
               className="border-b pb-1 pt-1 last:border-none border-stone-300 cursor-pointer" 
-              key={item._id ? item._id : item}
+              key={item._id ? item._id : item.name ? item.name : item}
               onClick={() => {
                 props.selectedItem(item);
                 setSelectedItem(item);

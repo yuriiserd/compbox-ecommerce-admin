@@ -19,6 +19,10 @@ export default async function handler(req, res) {
     const {name, image, parent, properties} = req.body;
     const categoryDoc = await Category.create({name, image, parent, childrens, properties});
 
+    if (!parent) {
+      res.json(categoryDoc);
+      return;
+    }
     //find parent category and update childrens - add new children 
     const parentCategory = await Category.findOne({_id: parent});
     

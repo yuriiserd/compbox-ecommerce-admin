@@ -248,7 +248,7 @@ export default function Categories() {
 
               <Dropdown 
                 items={categories} 
-                initialItem={parent}
+                initialItem={parent.name || 'Select parent category'}
                 selectedItem={setParent}/>
             </label>
             <div className="w-full relative flex flex-wrap justify-between">

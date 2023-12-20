@@ -7,6 +7,7 @@ html, body, * {
 }
 ::-webkit-scrollbar {
   width: 0.8rem;
+  height: 0.8rem;
 }
 
 /* Track */
@@ -221,7 +222,7 @@ label {
     transform: rotateX(180deg);
   }
   &_full {
-    @apply w-full flex justify-end pr-2;
+    @apply w-full flex justify-end pr-2 h-full items-center -mb-2;
   }
 }
 

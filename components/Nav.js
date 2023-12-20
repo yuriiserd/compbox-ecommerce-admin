@@ -21,7 +21,7 @@ export default function Nav() {
   }
 
   return (
-    <aside className={classNames("max-w-md bg-stone-200 px-4 min-h-screen max-sm:fixed navigation", {
+    <aside className={classNames("max-w-md bg-stone-200 px-4 min-h-screen min-w-[200px] max-sm:fixed navigation", {
       open: isOpen
     })}>
       <button 
@@ -35,7 +35,7 @@ export default function Nav() {
         </button>
       <Link href={'/'} className="flex items-center py-5 gap-4 flex-col">
         <Image src={logo} width={55} height={55} alt="logo"/>
-        <small className="text-xs text-center">yes! its Rozetka stole our logo</small>
+        {/* <small className="text-xs text-center"></small> */}
       </Link>
       <nav>
         <ul>

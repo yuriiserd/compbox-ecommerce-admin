@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Spinner from "@/components/Spinner";
 import { statusColor } from "@/lib/statusColor";
 import ReloadIcon from "@/components/icons/ReloadIcon";
+import Dropdown from "@/components/Dropdown";
 
 export default function Orders() {
 
@@ -17,25 +18,41 @@ export default function Orders() {
    const [noItemsFound, setNoItemsFound] = useState(false)
    const openPopup = useSelector(selectOpenPopupDelete);
    const [loading, setLoading] = useState(false);
+   const [filters, setFilters] = useState({paid: "All", status: "All"}); //filters for orders
 
    const dispatch = useDispatch();
    const spinRef = useRef(null);
 
+   console.log(openPopup);
    useEffect(() => {
-      getOrders()
-   }, [openPopup, noItemsFound])
+      if (!openPopup) {
+         getOrders()
+      }
+   }, [openPopup, noItemsFound, filters])
 
    async function getOrders() {
       setLoading(true);
-      await axios.get('/api/orders').then(res => {
-         setOrders(res.data);
-         if (res.data.length === 0) {
-            setNoItemsFound(true)
-         } else {
-            setNoItemsFound(false)
-         }
-         setLoading(false);
-      })
+      if (filters.paid !== "All" || filters.status !== "All") {
+         await axios.post('/api/orders', {filters: filters}).then(res => {
+            setOrders(res.data);
+            if (res.data.length === 0) {
+               setNoItemsFound(true)
+            } else {
+               setNoItemsFound(false)
+            }
+            setLoading(false);
+         })
+      } else {
+         await axios.get('/api/orders').then(res => {
+            setOrders(res.data);
+            if (res.data.length === 0) {
+               setNoItemsFound(true)
+            } else {
+               setNoItemsFound(false)
+            }
+            setLoading(false);
+         })
+      }
    }
 function spin() {
    const reload = spinRef.current
@@ -44,7 +61,6 @@ function spin() {
       reload.classList.remove('spin')
    }, 1000);
 }
-
 return (
    <Layout>
       
@@ -58,6 +74,38 @@ return (
          </button>
       </div>
       <Link className="btn min-w-fit" href={'/orders/new'}>Add new order</Link>
+      <div className="flex gap-4 mt-6">
+         
+         <div className="relative">
+            <label htmlFor="paid">Paid</label>
+            <Dropdown
+               initialItem={{name: filters.paid}}
+               items={[
+                  {name: 'All'},
+                  {name: 'Paid'},
+                  {name: 'Not paid'},
+               ]}
+               selectedItem={(item) => {
+                  setFilters({...filters, paid: item.name})
+               }}  
+               editable={false}
+            />
+         </div>
+         <div className="relative">
+            <label htmlFor="paid">Status</label>
+            <Dropdown
+               initialItem={{name: filters.status}}
+               items={[
+                  {name: 'All'},
+                  ...Object.keys(statusColor).map(item => ({name: item}))
+               ]}
+               selectedItem={(item) => {
+                  setFilters({...filters, status: item.name})
+               }}
+               editable={false}
+            />
+         </div>
+      </div>
       <div className="table default mt-6 max-w-[1100px]">
          <div className="table__head">
             <ul className="table-row">
@@ -79,7 +127,7 @@ return (
                         <li className="text-center p-4 w-full">No orders found</li>
                      </ul>
                   )}
-                  {orders.map((order) => {
+                  {orders.length > 0 && orders.map((order) => {
                      const time = new Date(order.createdAt).toLocaleString();
                      let totalPrice = 0;
                      order.product_items.forEach(item => {

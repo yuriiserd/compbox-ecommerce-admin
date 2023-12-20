@@ -141,20 +141,25 @@ export default function ProductForm({
     })
 
     const propertyName = property.name;
-
+    
     return (
       <label key={index} className="w-full relative flex">
         <span className="ml-4 mb-2 block w-1/2">- {propertyName}</span>
-        <DropdownProperties 
-          items={property.values.sort()} 
-          initialItem={initialValue}
-          selectedItem={(item) => setProductProperties(old => {
-            return {...old, [propertyName]: item}
-          })}
-          className="w-1/2"/>
+        <div className="relative w-1/2">
+          <DropdownProperties 
+            items={property.values.sort()} 
+            initialItem={initialValue}
+            selectedItem={(item) => setProductProperties(old => {
+              return {...old, [propertyName]: item}
+            })}
+            className="w-full"
+          />
+        </div>
       </label>
     )
   })
+
+  console.log(productProperties)
   
   return (
     <>
@@ -172,7 +177,7 @@ export default function ProductForm({
             
             <Dropdown 
               items={categories} 
-              initialItem={category}
+              initialItem={category.name || {name : 'Select Category'}}
               selectedItem={setCategory}/>
           </label>
           {!!propertiesToShow.length && (
