@@ -7,6 +7,19 @@ export default async function handler(req, res) {
   const method = req.method;
   await mongooseConnect();
   if (method === "POST") {
+    if (req.body.filters) {
+      const {paid, status} = req.body.filters;
+      const filters = {};
+      if (paid !== "All") {
+        filters.paid = paid === "Paid" ? true : false;
+      }
+      if (status !== "All") {
+        filters.status = status;
+      }
+      const orders = await Order.find(filters).sort({createdAt: -1});
+      res.json(orders);
+      return;
+    }
     const {address, city, country, email, product_items, name, zip, status} = req.body;
     const orderDoc = await Order.create({
       address, city, country, email, name, product_items, zip, status

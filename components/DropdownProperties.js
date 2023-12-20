@@ -1,4 +1,5 @@
 import classNames from "classnames";
+import { set } from "mongoose";
 import { useEffect, useState } from "react";
 
 export default function DropdownProperties(props) {
@@ -9,13 +10,14 @@ export default function DropdownProperties(props) {
   const [filteredItems, setFilteredItems] = useState([]);
 
   useEffect(() => {
-    setItems(props.items);
     setSelectedItem(props.initialItem);
-  }, [isVisibleDropdown, props.initialItem])
+  },[])
 
   useEffect(() => {
+    setItems(props.items);
+    
     setFilteredItems(props.items);
-  }, [isVisibleDropdown])
+  }, [isVisibleDropdown, props.initialItem])
 
   function filterItems(target) {
     const targetCheck = target.toLowerCase();
@@ -31,19 +33,18 @@ export default function DropdownProperties(props) {
     })
   }
 
-  function findItemByName(name) {
-
-    items.forEach(item => {
-      let itemName = item.toLowerCase();
-      let nameLowerCase = name.toLowerCase();
-      if (itemName.includes(nameLowerCase)) {
-        setSelectedItem(name);
-        if (itemName === nameLowerCase) {
-          props.selectedItem(item);
-          setSelectedItem(item);
+  function selectItemOnChange(name) {
+    if (name !== '') {
+      items.forEach(item => {
+        let itemName = item.toLowerCase();
+        let nameLowerCase = name.toLowerCase()
+        if (itemName.includes(nameLowerCase)) {
+          if (itemName === nameLowerCase) {
+            props.selectedItem(item)
+          }
         }
-      }
-    })
+      })
+    }
   }
 
   return (
@@ -60,11 +61,17 @@ export default function DropdownProperties(props) {
           type="text"
           placeholder="value"
           onChange={ev => {
-            setIsVisibleDropdown(true);
-            findItemByName(ev.target.value);
+            if (ev.target.value !== '') {
+              setIsVisibleDropdown(true);
+            } else {
+              setIsVisibleDropdown(false);
+            }
+            console.log(ev.target.value + " value")
+            selectItemOnChange(ev.target.value);
             filterItems(ev.target.value);
+            setSelectedItem(ev.target.value);
           }}
-          value={selectedItem || ''}
+          value={selectedItem}
         />
         <button
           className={classNames('dropdown-btn', {

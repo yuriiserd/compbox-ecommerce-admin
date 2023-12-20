@@ -103,17 +103,17 @@ export default function Products() {
           )}
           {products.map(product => (
             <ul className="table-row" key={product._id}>
-              <li className="flex gap-2 items-top">
-                <div className="image w-20">
-                  <Link href={`/products/edit/${product._id}`}>
-                    {product.images[0] ? (
-                      <Image src={product.images[0]} width={96} height={96} alt={product.title}/>
-                    ) : (
-                      <ProductIcon/>
-                    )}
-                  </Link>
-                </div>
-                <div>{product.properties["Brand"]} {product.title}</div>
+              <li>
+                <Link className="flex gap-2 items-top hover:underline" href={`/products/edit/${product._id}`}>
+                  <div className="image w-20">
+                      {product.images[0] ? (
+                        <Image src={product.images[0]} width={96} height={96} alt={product.title}/>
+                      ) : (
+                        <ProductIcon/>
+                      )}
+                  </div>
+                  <div>{product.properties["Brand"]} {product.title}</div>
+                </Link>
               </li>
               <li className="hidden md:table-cell max-w-[200px]">{product.category.name}</li>
               <li className="max-w-[100px]">

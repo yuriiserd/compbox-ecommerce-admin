@@ -1,5 +1,5 @@
 .inactiveLink {
-  @apply py-2;
+  @apply py-2 mb-2 relative ;
   flex-direction: column;
   &>a {
     @apply flex gap-2 hover:gap-4 duration-200 text-stone-900 hover:text-stone-500
@@ -7,21 +7,26 @@
   .submenu {
     visibility: hidden;
     flex-direction: column;
-    @apply pt-0 h-0 flex gap-2 duration-200 opacity-0;
+    @apply pt-0 h-0 flex gap-2 duration-200 opacity-0 absolute left-full bg-stone-300 p-4 rounded-md -ml-4 top-0 min-w-[160px];
     a {
       @apply flex gap-2 hover:gap-4 duration-200 text-stone-900 hover:text-stone-500
     }
   }
   &:hover {
-    @apply  px-2 hover:gap-2 rounded-md -left-2 relative -mr-2;
+    @apply  px-2 hover:gap-2 rounded-md -left-2 relative -mr-2 ;
     .submenu {
-      @apply pt-2 mt-2 border-t border-stone-400 h-auto visible opacity-100;
+      @apply pt-2 mt-2 h-auto visible opacity-100 left-full;
     }
   }
 }
 .activeLink {
   @apply inactiveLink bg-stone-300 px-2 hover:gap-2 rounded-md -left-2 relative -mr-2;
   .submenu {
-    @apply pt-2 mt-2 border-t border-stone-400 h-auto visible opacity-100;
+    @apply pt-2 mt-2 border-t border-stone-400 h-auto visible opacity-100 left-2 relative -mr-0 min-w-fit rounded-none pb-2 ;
+  }
+  &:hover {
+    .submenu {
+      @apply pt-2 mt-2 border-t border-stone-400 h-auto visible opacity-100 left-2 relative -mr-0 min-w-fit rounded-none pb-2 ;
+    }
   }
 }
