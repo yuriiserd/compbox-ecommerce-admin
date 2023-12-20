@@ -117,31 +117,31 @@ export async function getServerSideProps() {
 
    await mongooseConnect();
    
-   async function getAnalyticsData() {
-      const jwt = new google.auth.JWT(
-        process.env.GOOGLE_CLIENT_EMAIL,
-        null,
-        process.env.GOOGLE_PRIVATE_KEY,
-        ['https://www.googleapis.com/auth/analytics.readonly'],
-        null
-      );
+   // async function getAnalyticsData() {
+   //    const jwt = new google.auth.JWT(
+   //      process.env.GOOGLE_CLIENT_EMAIL,
+   //      null,
+   //      process.env.GOOGLE_PRIVATE_KEY,
+   //      ['https://www.googleapis.com/auth/analytics.readonly'],
+   //      null
+   //    );
     
-      await jwt.authorize();
+   //    await jwt.authorize();
     
-      const response = await google.analytics('v3').data.ga.get({
-        auth: jwt,
-        ids: 'ga:' + process.env.VIEW_ID,
-        'start-date': '30daysAgo',
-        'end-date': 'today',
-        metrics: 'ga:sessions,ga:users',
-      });
-      console.log(response.data, "response.data")
+   //    const response = await google.analytics('v3').data.ga.get({
+   //      auth: jwt,
+   //      ids: 'ga:' + process.env.VIEW_ID,
+   //      'start-date': '30daysAgo',
+   //      'end-date': 'today',
+   //      metrics: 'ga:sessions,ga:users',
+   //    });
+   //    console.log(response.data, "response.data")
     
-      return response.data;
-    }
-   //  console.log(process.env.VIEW_ID, process.env.GOOGLE_CLIENT_EMAIL, process.env.GOOGLE_PRIVATE_KEY)
-    // Use this function wherever you need to fetch Google Analytics data
-   getAnalyticsData().then(data => console.log(data));
+   //    return response.data;
+   //  }
+   // //  console.log(process.env.VIEW_ID, process.env.GOOGLE_CLIENT_EMAIL, process.env.GOOGLE_PRIVATE_KEY)
+   //  // Use this function wherever you need to fetch Google Analytics data
+   // getAnalyticsData().then(data => console.log(data));
 
    const orders = await Order.find({}).sort({ createdAt: -1 });
    const customers = await Customer.find({}).sort({ createdAt: -1 });
