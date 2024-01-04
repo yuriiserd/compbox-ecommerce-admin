@@ -263,10 +263,106 @@ label {
   }
 }
 
+// react-datepicker
+.react-datepicker {
+  @apply border-2 border-stone-200 rounded-md;
+  .react-datepicker__header {
+    @apply bg-stone-200;
+    .react-datepicker__current-month {
+      @apply text-stone-800;
+    }
+  }
+  .react-datepicker__day-name {
+    @apply text-stone-800;
+  }
+  .react-datepicker__day--selected {
+    @apply bg-stone-700;
+  }
+  .react-datepicker__day--keyboard-selected {
+    @apply bg-stone-700;
+  }
+  .react-datepicker__day--today {
+    @apply bg-stone-200;
+  }
+  .react-datepicker__day--disabled {
+    @apply text-stone-400;
+  }
+  .react-datepicker__day--disabled:hover {
+    @apply bg-stone-200;
+  }
+  .react-datepicker__day:hover {
+    @apply bg-stone-200;
+  }
+  .react-datepicker__day--outside-month {
+    @apply text-stone-400;
+  }
+  .react-datepicker__day--outside-month:hover {
+    @apply bg-stone-200;
+  }
+  .react-datepicker__day--keyboard-selected:focus {
+    @apply bg-stone-700;
+  }
+  .react-datepicker__day--selected:hover {
+    @apply bg-stone-700;
+  }
+  .react-datepicker__day--selected:active {
+    @apply bg-stone-700;
+  }
+  .react-datepicker__day--selected:focus {
+    @apply bg-stone-700;
+  }
+  .react-datepicker__day--keyboard-selected:active {
+    @apply bg-stone-700;
+  }
+  .react-datepicker__day--keyboard-selected:focus {
+    @apply bg-stone-700;
+  }
+  .react-datepicker__day--today:hover {
+    @apply bg-stone-200;
+  }
+  .react-datepicker__day--today:active {
+    @apply bg-stone-200;
+  }
+  .react-datepicker__day--today:focus {
+    @apply bg-stone-200;
+  }
+  .react-datepicker__day--today.react-datepicker__day--selected:hover {
+    @apply bg-stone-700;
+  }
+  .react-datepicker__day--today.react-datepicker__day--selected:active {
+    @apply bg-stone-700;
+  }
+  .react-datepicker__day--today.react-datepicker__day--selected:focus {
+    @apply bg-stone-700;
+  }
+}
+
 // animation 
 .spin {
   @apply animate-spin;
   animation-duration: 1000ms;
   animation-iteration-count: 2;
   animation-timing-function: cubic-bezier(0.680, -0.550, 0.265, 1.550);
+}
+
+.order-summary-card {
+  width: 300px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 40px 20px;
+  margin: 10px;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+  text-align: center;
+  border-radius: 1rem;
+  h3 {
+    margin: 0;
+    color: #333;
+    font-size: 1.5em;
+    margin-bottom: 0.5rem;
+  }
+  p {
+    margin: 0;
+    color: #666;
+    font-size: 1.2em;
+  }
 }

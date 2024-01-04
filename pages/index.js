@@ -1,17 +1,83 @@
 import Dropdown from "@/components/Dropdown";
 import InfoChart from "@/components/InfoChart";
 import Layout from "@/components/Layout";
+import OrdersSummaryCard from "@/components/OrdersSummaryCard";
 import { mongooseConnect } from "@/lib/mongoose";
 import { Customer } from "@/models/Customer";
 import { Order } from "@/models/Order";
-import { useState } from "react";
-// import { google } from 'googleapis';
+import axios from "axios";
+import { useEffect, useMemo, useState } from "react";
+import ReactDatePicker, { registerLocale } from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+// import uk from 'date-fns/locale/uk';
 
+// registerLocale('uk', uk);
 
+export default function Home() {
 
-export default function Home({orders, customers}) {
+   const firstDayOfMonth = useMemo(() => {
+      const date = new Date();
+      return new Date(date.getFullYear(), date.getMonth(), 1);
+   }, []);
 
+   const [orders, setOrders] = useState([]);
+   const [ordersByPeriod, setOrdersByPeriod] = useState({
+      today: [],
+      week: [],
+      month: [],
+   });
+   const [customers, setCustomers] = useState([]);
 
+   const [fromDate, setFromDate] = useState(firstDayOfMonth);
+   const [toDate, setToDate] = useState(new Date());
+
+   useEffect(() => {
+      getOrders();
+      getCustomers();
+   }, [fromDate, toDate]);
+
+   useEffect(() => {
+      getOrdersByPeriod();
+   }, []);
+
+   async function getOrders() {
+      await axios.post("/api/orders", {period: [fromDate, toDate]}).then(res => {
+         setOrders(res.data);
+      }).catch(err => console.log(err));
+   }
+   async function getOrdersByPeriod() {
+      const today = new Date();
+      const week = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
+      const month = new Date(today.getFullYear(), today.getMonth(), 1);
+      const orders = await axios.post("/api/orders", {period: [month, today]}).then(res => res.data);
+      const ordersByPeriod = {
+         today: [],
+         week: [],
+         month: [],
+      };
+      orders.forEach(order => {
+         const date = new Date(order.createdAt);
+         if (date.getTime() >= today.setHours(0, 0, 0, 0)) {
+            ordersByPeriod.today.push(order);
+         }
+         if (date.getTime() >= week.getTime()) {
+            ordersByPeriod.week.push(order);
+         }
+         if (date.getTime() >= month.getTime()) {
+            ordersByPeriod.month.push(order);
+         }
+      });
+      setOrdersByPeriod(ordersByPeriod);
+   }
+
+   async function getCustomers() {
+      await axios.post("/api/customers", {period: [fromDate, toDate]}).then(res => {
+         setCustomers(res.data);
+      }
+      ).catch(err => console.log(err));
+   }
+   
+   
    const [chartInfo, setChartInfo] = useState("Orders");
 
    const ordersCount = {};
@@ -24,7 +90,7 @@ export default function Home({orders, customers}) {
       const month = date.getMonth();
       const year = date.getFullYear();
       const day = date.getDate();
-      const key = `${month}/${day}/${year}`;
+      const key = `${month + 1}/${day}/${year}`;
       if (calcOrderTotal(order) === 0) return;
       if (ordersCount[key]) {
          ordersCount[key] += 1;
@@ -78,78 +144,111 @@ export default function Home({orders, customers}) {
    
    return (
       <Layout>
-         <div className="relative max-w-[300px] mb-6">
-            <Dropdown 
-               items={[
-                  "Orders",
-                  "Income",
-                  "Customers"
-               ]}
-               initialItem={chartInfo}
-               selectedItem={setChartInfo}
-            />
+         <div className="max-w-[1100px]">
+            <div className="flex gap-4 mb-6 flex-wrap md:flex-nowrap flex-col md:flex-row items-center">
+               <div className="relative max-w-[300px]">
+                  <Dropdown 
+                     items={[
+                        "Orders",
+                        "Income",
+                        "Customers"
+                     ]}
+                     initialItem={chartInfo}
+                     selectedItem={setChartInfo}
+                  />
+               </div>
+               <div className="flex gap-2 items-center max-w-[300px] flex-col md:flex-row">
+                  from
+                  <ReactDatePicker
+                     selected={fromDate}
+                     onChange={(date) => {
+                        setFromDate(date);
+                     }}
+                     dateFormat="MM.dd.yyyy"
+                     className="w-full mb-0"
+                     // locale="uk"
+                  />
+               </div>
+               <div className="flex gap-2 items-center max-w-[300px] flex-col md:flex-row ">
+                  to
+                  <ReactDatePicker
+                     selected={toDate}
+                     onChange={(date) => {
+                        setToDate(date);
+                     }}
+                     dateFormat="MM.dd.yyyy"
+                     className="w-full mb-0"
+                     // locale="uk"
+                  />
+               </div>
+            </div>
+            {chartInfo === "Orders" && (
+               <div style={{ height: '300px' }}>
+                  <h3 className="text-2xl mb-4">Orders</h3>
+                  <InfoChart 
+                     id="chartCanvasCount" 
+                     key={"orders" + orders.length} 
+                     data={ordersCount} 
+                     color="#33c863" 
+                     bg="rgba(51, 200, 99, .1)" 
+                     label={"Orders"} 
+                     step={1}
+                  />
+               </div>
+            )}
+            {chartInfo === "Income" && (
+               <div style={{ height: '300px' }}>
+                  <h3 className="text-2xl mb-4">Income</h3>
+                  <InfoChart id="chartCanvasTotal" 
+                     key={"income" + orders.length} 
+                     data={ordersTotal} 
+                     color="#f2994a" 
+                     bg="rgba(242, 153, 74, .1)" 
+                     label="Income"
+                  />
+               </div>
+            )}
+            {chartInfo === "Customers" && (
+               <div style={{ height: '300px' }}>
+                  <h3 className="text-2xl mb-4">Customers</h3>
+                  <InfoChart 
+                     id="chartCanvasTotal" 
+                     key={"customers" + customers.length} 
+                     data={customersCount} 
+                     color="#007BFF" 
+                     bg="rgba(0, 123, 255, .1)" 
+                     label="Customers" 
+                     step={1}
+                  />
+               </div>
+            )}
+
+            <div className="mt-20">
+               <h3 className="text-2xl mb-4">Orders Summary</h3>
+               <div className="flex justify-center md:justify-between gap-2 flex-wrap md:flex-nowrap">
+                  <OrdersSummaryCard orders={ordersByPeriod.today} period="Today" />
+                  <OrdersSummaryCard orders={ordersByPeriod.week} period="This Week" />
+                  <OrdersSummaryCard orders={ordersByPeriod.month} period="This Month" />
+               </div>
+            </div>
          </div>
-         {chartInfo === "Orders" && (
-            <div style={{ height: '300px' }}>
-               <h3 className="text-2xl mb-4">Orders</h3>
-               <InfoChart id="chartCanvasCount" data={ordersCount} color="#33c863" bg="rgba(51, 200, 99, .1)" label={"Orders"} step={1}/>
-            </div>
-         )}
-         {chartInfo === "Income" && (
-            <div style={{ height: '300px' }}>
-               <h3 className="text-2xl font-semibold mb-4">Income</h3>
-               <InfoChart id="chartCanvasTotal" data={ordersTotal} color="#f2994a" bg="rgba(242, 153, 74, .1)" label="Income"/>
-            </div>
-         )}
-         {chartInfo === "Customers" && (
-            <div style={{ height: '300px' }}>
-               <h3 className="text-2xl font-semibold mb-4">Customers</h3>
-               <InfoChart id="chartCanvasTotal" data={customersCount} color="#007BFF" bg="rgba(0, 123, 255, .1)" label="Customers" step={1}/>
-            </div>
-         )}
 
          
       </Layout>
    )
 }
 
-export async function getServerSideProps() {
+// export async function getServerSideProps() {
 
-   await mongooseConnect();
+//    await mongooseConnect();
    
-   // async function getAnalyticsData() {
-   //    const jwt = new google.auth.JWT(
-   //      process.env.GOOGLE_CLIENT_EMAIL,
-   //      null,
-   //      process.env.GOOGLE_PRIVATE_KEY,
-   //      ['https://www.googleapis.com/auth/analytics.readonly'],
-   //      null
-   //    );
-    
-   //    await jwt.authorize();
-    
-   //    const response = await google.analytics('v3').data.ga.get({
-   //      auth: jwt,
-   //      ids: 'ga:' + process.env.VIEW_ID,
-   //      'start-date': '30daysAgo',
-   //      'end-date': 'today',
-   //      metrics: 'ga:sessions,ga:users',
-   //    });
-   //    console.log(response.data, "response.data")
-    
-   //    return response.data;
-   //  }
-   // //  console.log(process.env.VIEW_ID, process.env.GOOGLE_CLIENT_EMAIL, process.env.GOOGLE_PRIVATE_KEY)
-   //  // Use this function wherever you need to fetch Google Analytics data
-   // getAnalyticsData().then(data => console.log(data));
+//    const orders = await Order.find({ createdAt: { $gte: firstDayOfMonth } }).sort({ createdAt: -1 });
+//    const customers = await Customer.find({ createdAt: { $gte: firstDayOfMonth } }).sort({ createdAt: -1 });
 
-   const orders = await Order.find({}).sort({ createdAt: -1 });
-   const customers = await Customer.find({}).sort({ createdAt: -1 });
-
-   return {
-      props: {
-         orders: JSON.parse(JSON.stringify(orders)),
-         customers: JSON.parse(JSON.stringify(customers)),
-      }
-   }
-} 
+//    return {
+//       props: {
+//          orders: JSON.parse(JSON.stringify(orders)),
+//          customers: JSON.parse(JSON.stringify(customers)),
+//       }
+//    }
+// } 
