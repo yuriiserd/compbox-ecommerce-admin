@@ -20,6 +20,12 @@ export default async function handler(req, res) {
       res.json(orders);
       return;
     }
+    if (req.body.period) {
+      const [fromDate, toDate] = req.body.period;
+      const orders = await Order.find({createdAt: {$gte: fromDate, $lte: toDate}}).sort({createdAt: -1});
+      res.json(orders);
+      return;
+    }
     const {address, city, country, email, product_items, name, zip, status} = req.body;
     const orderDoc = await Order.create({
       address, city, country, email, name, product_items, zip, status
@@ -36,6 +42,8 @@ export default async function handler(req, res) {
   if (method === "GET") {
     if (req.query?.id) {
       res.json(await Order.findOne({_id:req.query.id}))
+    } else if (req.query?.period) {
+      
     } else {
       res.json(await Order.find().sort({createdAt: -1}));
     }
