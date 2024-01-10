@@ -48,6 +48,16 @@ export default function DeletePopup({collection}) {
     })
   }
 
+  const deleteMessage = () => {
+    if (collection === "categories") {
+      return currentItem?.name
+    } else if (collection === "orders") {
+      return 'this order'
+    } else {
+      return 'this item'
+    }
+  }
+
   return (
     <>
       <div className={classNames('popup',{
@@ -62,7 +72,8 @@ export default function DeletePopup({collection}) {
           )}
           {!loading.inProgress && !loading.done && (
             <>
-              <p>Do you whant to delete<br/> {collection === "categories" ? currentItem?.name : collection === "orders" ? 'this order' : currentItem?.title}?</p>
+              <p>Do you whant to delete<br/> {deleteMessage()}?</p>
+              
               <div className="flex gap-4 justify-center mt-4">
                 <button className="btn btn_red" onClick={() => {
                   deleteItem(currentItem?._id);
