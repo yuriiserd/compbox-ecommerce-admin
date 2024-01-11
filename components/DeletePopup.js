@@ -1,9 +1,12 @@
 import { closeDelete, selectItemIdDelete, selectOpenPopupDelete } from "@/slices/deleteSlice";
 import axios from "axios";
 import classNames from "classnames";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Loading from "./Loading";
+import { useSession } from "next-auth/react";
+import { ErrorContext } from "./ErrorContext";
+import useAdminRole from "@/hooks/useAdminRole";
 
 
 export default function DeletePopup({collection}) {
@@ -17,6 +20,9 @@ export default function DeletePopup({collection}) {
   const dispatch = useDispatch();
   const [currentItem, setcurrentItem] = useState([]);
 
+  const {data: session} = useSession();
+  const {setErrorMessage, setShowError} = useContext(ErrorContext);
+
   useEffect(() => {
     if (openPopup) {
       axios.get('/api/' + collection + '?id=' + itemId).then(res => {
@@ -26,6 +32,21 @@ export default function DeletePopup({collection}) {
   },[openPopup])
 
   async function deleteItem(id) {
+
+    const role = await useAdminRole(session?.user?.email);
+    if (role !== 'Admin') {
+      setErrorMessage(`You are not authorized to delete ${collection ? collection : 'items'}. Please contact an admin`);
+      setShowError(true);
+      dispatch(closeDelete())
+      setLoading(() => {
+        return {
+          inProgress: false,
+          done: false
+        }
+      })
+      return;
+    }
+
     await axios.delete('/api/' + collection + '?id='+id).then((res) => {
       if (res.data) {
         setLoading(() => {
@@ -53,6 +74,8 @@ export default function DeletePopup({collection}) {
       return currentItem?.name
     } else if (collection === "orders") {
       return 'this order'
+    } else if (collection === "products") {
+      return currentItem?.title
     } else {
       return 'this item'
     }

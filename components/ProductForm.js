@@ -1,5 +1,5 @@
 import { Editor } from "@tinymce/tinymce-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/router";
 import Image from "next/image";
@@ -8,6 +8,9 @@ import { ReactSortable } from "react-sortablejs";
 import Dropdown from "./Dropdown";
 import DropdownProperties from "./DropdownProperties";
 import { DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { useSession } from "next-auth/react";
+import { ErrorContext } from "./ErrorContext";
+import useAdminRole from "@/hooks/useAdminRole";
 
 
 export default function ProductForm({
@@ -40,6 +43,9 @@ export default function ProductForm({
 
   const router = useRouter();
 
+  const {data: session} = useSession();
+  const {setErrorMessage, setShowError} = useContext(ErrorContext);
+
   useEffect(() => {
     axios.get('/api/categories').then(res => {
       setCategories(res.data);
@@ -51,6 +57,14 @@ export default function ProductForm({
 
   async function saveProduct(e) {
     e.preventDefault();
+
+    const role = await useAdminRole(session?.user?.email);
+    if (role !== 'Admin') {
+      setErrorMessage('You are not authorized to create or save product. Please contact an admin');
+      setShowError(true);
+      return;
+    }
+
     const data = {title, category, description, content, price, salePrice, images, properties: productProperties};
     if (_id) {
       await axios.put('/api/products', {...data, _id});
@@ -67,6 +81,14 @@ export default function ProductForm({
   const editorRef = useRef(null);
 
   async function uploadImages(e) {
+
+    const role = await useAdminRole(session?.user?.email);
+    if (role !== 'Admin') {
+      setErrorMessage('You are not authorized to upload images. Please contact an admin');
+      setShowError(true);
+      return;
+    }
+
     const files = e.target?.files;
     if (files?.length > 0) {
       setIsUploading(true);
@@ -158,8 +180,6 @@ export default function ProductForm({
       </label>
     )
   })
-
-  console.log(productProperties)
   
   return (
     <>

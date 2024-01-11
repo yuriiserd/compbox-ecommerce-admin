@@ -1,20 +1,26 @@
 import Dropdown from "@/components/Dropdown";
+import { ErrorContext } from "@/components/ErrorContext";
 import Layout from "@/components/Layout";
 import Spinner from "@/components/Spinner";
 import DeleteIcon from "@/components/icons/DeleteIcon";
 import ReloadIcon from "@/components/icons/ReloadIcon";
 import StarIcon from "@/components/icons/StarIcon";
+import useAdminRole from "@/hooks/useAdminRole";
 import axios from "axios";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 
 export default function ReviewsPage() {
 
   const [loading, setLoading] = useState(false);
   const [reviews, setReviews] = useState([]);
   const [status, setStatus] = useState("status");
-  const [noItemsFound, setNoItemsFound] = useState(false)
+  const [noItemsFound, setNoItemsFound] = useState(false);
+  const {data: session} = useSession();
+
+  const {setErrorMessage, setShowError} = useContext(ErrorContext);
 
   const spinRef = useRef(null);
 
@@ -51,6 +57,14 @@ export default function ReviewsPage() {
       })
   }
   async function updateStatus(id, status) {
+
+    const role = await useAdminRole(session?.user?.email);
+    if (role !== 'Admin') {
+      setErrorMessage('You are not authorized to update reviews. Please contact an admin');
+      setShowError(true);
+      return;
+    }
+
     try {
       await axios.put(`/api/reviews/`, {
         id: id,
@@ -63,7 +77,14 @@ export default function ReviewsPage() {
     }
   } 
   async function deleteReview(id) {
-    console.log(id);
+    
+    const role = await useAdminRole(session?.user?.email);
+    if (role !== 'Admin') {
+      setErrorMessage('You are not authorized to delete reviews. Please contact an admin');
+      setShowError(true);
+      return;
+    }
+
     try {
       await axios.delete(`/api/reviews?id=${id}`)
         .then(res => {

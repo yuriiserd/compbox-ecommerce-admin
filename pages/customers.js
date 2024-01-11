@@ -73,7 +73,7 @@ export default function Customers() {
                                     {order.status} 
                                   </span>
                                   <Link href={"/orders/edit/" + order._id}>
-                                    {new Date(order.updatedAt).toLocaleDateString()}
+                                    <span className="text-[#007f80] hover:underline">{new Date(order.updatedAt).toLocaleDateString()}</span>
                                     &nbsp;
                                     {discountTotal ? (
                                       <>
@@ -109,8 +109,8 @@ export default function Customers() {
                                   >
                                     {order.status} 
                                   </span>
-                                  <Link href={"/orders/edit/" + order._id}>
-                                    {new Date(order.updatedAt).toLocaleDateString()}
+                                  <Link className="" href={"/orders/edit/" + order._id}>
+                                    <span className="text-[#007f80] hover:underline">{new Date(order.updatedAt).toLocaleDateString()}</span>
                                     &nbsp;
                                     {discountTotal ? (
                                       <>

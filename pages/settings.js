@@ -3,11 +3,14 @@ import Layout from "@/components/Layout";
 import Search from "@/components/Search";
 import DeleteIcon from "@/components/icons/DeleteIcon";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Image from "next/image";
 import { get } from "sortablejs";
 import Spinner from "@/components/Spinner";
 import Coupons from "@/components/Coupons";
+import useAdminRole from "@/hooks/useAdminRole";
+import { useSession } from "next-auth/react";
+import { ErrorContext } from "@/components/ErrorContext";
 
 
 export default function Settings() {
@@ -20,6 +23,9 @@ export default function Settings() {
    const [openDropdown, setOpenDropdown] = useState(false);
    const [saved, setSaved] = useState(false);
    const [loading, setLoading] = useState(false);
+
+   const {data: session} = useSession();
+   const {setErrorMessage, setShowError} = useContext(ErrorContext);
 
    useEffect(() => {
       setLoading(true);
@@ -43,6 +49,15 @@ export default function Settings() {
    }
 
    async function saveSettings() {
+
+      const role = await useAdminRole(session?.user?.email);
+      if (role !== 'Admin') {
+         setErrorMessage('You are not authorized to save settings. Please contact an admin');
+         setShowError(true);
+         return;
+      }
+      
+
       if (product._id !== initialProduct._id) {
          await axios.put('/api/settings', {name: 'featuredProduct', value: product._id}).then(res => {
             if (res.data) {

@@ -47,7 +47,7 @@ export default function Layout({children}) {
         {/* error popup */}
         <div 
           className={
-            `fixed right-10 transition-all py-4 px-6 rounded-md bg-red-600 text-white max-w-[350px] 
+            `fixed right-10 transition-all py-4 px-6 rounded-md bg-red-700 text-white max-w-[350px] 
             ${showError ? "bottom-10 translate-y-0" : "bottom-0 translate-y-full"}`
           }>
           {errorMessage}
