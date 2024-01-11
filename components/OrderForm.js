@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/router";
 import Image from "next/image";
@@ -11,6 +11,9 @@ import CheckIcon from "./icons/CheckIcon";
 import Loading from "./Loading";
 import ProductIcon from "./icons/ProductIcon";
 import Dropdown from "./Dropdown";
+import useAdminRole from "@/hooks/useAdminRole";
+import { useSession } from "next-auth/react";
+import { ErrorContext } from "./ErrorContext";
 
 
 export default function OrderForm({
@@ -47,6 +50,10 @@ export default function OrderForm({
   const [copied, setCopied] = useState(false);
   const [productsIds, setProductsIds] = useState({});
   const [requestInProgress, setRequestInProgress] = useState(false);
+
+  const {data: session} = useSession();
+
+  const {setErrorMessage, setShowError} = useContext(ErrorContext);
 
   const router = useRouter();
 
@@ -91,6 +98,14 @@ export default function OrderForm({
 
   async function saveOrder(e) {
     e.preventDefault();
+
+    const role = await useAdminRole(session?.user?.email); 
+    if (role !== 'Admin') {
+      setErrorMessage('You are not authorized to save orders. Please contact an admin');
+      setShowError(true);
+      return;
+    }
+
     const data = {address, city, country, email, name, product_items: products, zip, status};
     
     if (_id) {
@@ -177,6 +192,7 @@ export default function OrderForm({
   }
 
   async function getPaymentUrl() {
+    
     setRequestInProgress(true)
     const data = {
       _id,
@@ -287,7 +303,6 @@ export default function OrderForm({
             onChange={(e) => setZip(e.target.value)}
           />
           
-
           <button type="submit" onClick={(e) => saveOrder(e)} className="btn ">{_id ? 'Save' : 'Add Order'}</button>
         </div>
         <div className="products">

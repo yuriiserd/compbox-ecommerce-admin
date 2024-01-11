@@ -1,7 +1,7 @@
 import Layout from "@/components/Layout";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import axios, { Axios } from "axios";
+import { useContext, useEffect, useState } from "react";
+import axios from "axios";
 import Spinner from "@/components/Spinner";
 import DeletePopup from "@/components/DeletePopup"
 import { openDelete, setDeleteItem, selectOpenPopupDelete } from "@/slices/deleteSlice";
@@ -14,6 +14,9 @@ import CopyIcon from "@/components/icons/CopyIcon";
 import ProductIcon from "@/components/icons/ProductIcon";
 import Search from "@/components/Search";
 import Dropdown from "@/components/Dropdown";
+import useAdminRole from "@/hooks/useAdminRole";
+import { useSession } from "next-auth/react";
+import { ErrorContext } from "@/components/ErrorContext";
 
 
 export default function Products() {
@@ -24,6 +27,11 @@ export default function Products() {
   const [noItemsFound, setNoItemsFound] = useState(false);
   const openPopup = useSelector(selectOpenPopupDelete);
   const dispatch = useDispatch();
+
+  const {data: session} = useSession();
+
+  const {setErrorMessage, setShowError} = useContext(ErrorContext);
+  
 
   useEffect(() => {
     getProducts()
@@ -50,6 +58,13 @@ export default function Products() {
   }
 
   async function createCopy(id) {
+
+    const role = await useAdminRole(session?.user?.email);
+    if (role !== 'Admin') {
+      setErrorMessage('You are not authorized to create copies of products. Please contact an admin');
+      setShowError(true);
+      return;
+    }
 
     await axios.get('/api/products?id='+id).then(response => {
       const {title, category, description, content, price, salePrice, images, properties} = response.data;
