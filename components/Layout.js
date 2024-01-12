@@ -38,7 +38,11 @@ export default function Layout({children}) {
         <main className="w-full overflow-y-scroll">
           <div className="flex justify-end items-center gap-2 w-full p-4 bg-stone-300">
             {session?.user?.name}
-            <Image className="rounded-full object-cover w-10 h-10" src={session?.user?.image} width={35} height={35} alt="user picture"/>
+            {session?.user?.image ? (
+              <Image className="rounded-full object-cover w-10 h-10" src={session?.user?.image} width={35} height={35} alt="user picture"/>
+            ) : (
+              <Image className="rounded-full object-cover w-10 h-10" src="https://freedom-ecommerce.s3.amazonaws.com/1705071057621.png" width={35} height={35} alt="user picture"/>
+            )}
           </div>
           <div className="p-4 ">
             {children}
