@@ -1,4 +1,5 @@
 import Error from "@/components/Error";
+import Spinner from "@/components/Spinner";
 import { signIn, useSession } from "next-auth/react"
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -8,11 +9,13 @@ export default function SignIn() {
 
   const [userInfo, setUserInfo] = useState({email: "", password: ""});
   const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const router = useRouter();
 
   async function handleSubmit(e) {
     e.preventDefault();
+    setLoading(true)
     setError(false)
 
     const res = await signIn('credentials', {
@@ -25,6 +28,7 @@ export default function SignIn() {
     } else {
       setError(true)
     }
+    setLoading(false)
   }
 
   return <>
@@ -49,7 +53,11 @@ export default function SignIn() {
             {error && (
               <Error message="Invalid Credentials"/>
             )}
-          <input type="submit" value="Login" className="bg-stone-600 p-2 px-4 rounded-lg text-white border-none hover:cursor-pointer w-24 m-0 mb-4 mt-4"/>
+          {loading ? (
+            <Spinner/>
+          ) : (
+            <input  type="submit" value="Login" className="bg-stone-600 p-2 px-4 rounded-lg text-white border-none hover:cursor-pointer w-24 m-0 mb-4 mt-4"/>
+          )}
         </form>
         {/* <button onClick={() => signIn('google')} className="bg-stone-600 text-white p-2 px-4 rounded-lg">Login with Google</button> */}
       </div>
