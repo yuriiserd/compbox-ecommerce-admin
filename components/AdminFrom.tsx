@@ -7,6 +7,7 @@ import bcrypt from "bcryptjs";
 import useAdminRole from "../hooks/useAdminRole";
 import { useSession } from "next-auth/react";
 import { ErrorContext } from "./ErrorContext";
+import { Admin } from "../types/admin";
 
 type AdminFormProps = {
   adminId: string;
@@ -15,13 +16,13 @@ type AdminFormProps = {
 
 export default function AdminForm({ adminId, setShowForm }: AdminFormProps) {
 
-  const [admin, setAdmin] = useState({
+  const [admin, setAdmin] = useState<Admin>({
     name: '',
     email: '',
     password: '',
     role: 'Admin',
     photo: '',
-    lastLogin: ''
+    lastLogin: '',
   });
   const [uploadingImage, setUploadingImage] = useState(false);
   const [existingAdminPassword, setExistingAdminPassword] = useState('');
