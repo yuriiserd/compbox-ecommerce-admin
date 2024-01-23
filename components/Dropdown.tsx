@@ -1,18 +1,40 @@
 import classNames from "classnames";
 import { useEffect, useState } from "react";
 
-export default function Dropdown(props) {
+type SelectedItem = {
+  name: string;
+} | string | null;
+
+type DropdownProps = {
+  items: string[] | {}[];
+  placeholder?: string;
+  selectedItem: (item: SelectedItem) => void;
+  editable?: boolean;
+  initialItem: SelectedItem;
+}
+
+export default function Dropdown(props: DropdownProps) {
+
   // props - items, placeholder, selectedItem, editable, initialItem
 
   const [isVisibleDropdown, setIsVisibleDropdown] = useState(false);
-  const [selectedItem, setSelectedItem] = useState({});
+  const [selectedItem, setSelectedItem] = useState<SelectedItem>(null);
+  const [selectedItemName, setSelectedItemName] = useState('');
   const [items, setItems] = useState([]);
   const [filteredItems, setFilteredItems] = useState([]);
 
   useEffect(() => {
     setItems(props.items);
-    setSelectedItem(props.initialItem || {});
+    setSelectedItem(props.initialItem || null);
   }, [isVisibleDropdown, props.initialItem])
+
+  useEffect(() => {
+    if (typeof(selectedItem) !== 'string') {
+      setSelectedItemName(selectedItem?.name);
+    } else {
+      setSelectedItemName(selectedItem);
+    }
+  }, [selectedItem])
 
   useEffect(() => {
     setFilteredItems(props.items);
@@ -63,7 +85,7 @@ export default function Dropdown(props) {
             selectItemOnChange(ev.target.value);
             filterItems(ev.target.value);
           }}
-          value={selectedItem.name ? selectedItem.name : selectedItem || ''}
+          value={selectedItemName}
         />
         <button
           className={classNames(`dropdown-btn ${!props?.editable && 'dropdown-btn_full'}`, {

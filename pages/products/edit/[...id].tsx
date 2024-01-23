@@ -1,9 +1,9 @@
-import Layout from "/components/Layout";
+import Layout from "../../../components/Layout";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import ProductForm from "/components/ProductForm";
-import Back from "/components/Back";
+import ProductForm from "../../../components/ProductForm";
+import Back from "../../../components/Back";
 import Link from "next/link";
 
 

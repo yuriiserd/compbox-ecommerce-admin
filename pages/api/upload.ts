@@ -1,17 +1,19 @@
-import multiparty from 'multiparty';
+import multiparty, {Fields, Files} from 'multiparty';
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import fs from 'fs';
 import mime from 'mime-types';
+import { NextApiRequest, NextApiResponse } from 'next';
+import Error from 'next/error';
 
 const bucketName = process.env.S3_BUCKET_NAME;
 
 
-export default async function handle(req, res) {
+export default async function handle(req: NextApiRequest, res: NextApiResponse) {
 
   const form = new multiparty.Form();
 
-  const {fields, files} = await new Promise((resolve, reject) => {
-    form.parse(req, (err, fields, files) => {
+  const {fields, files}: {fields: Fields, files: Files} = await new Promise((resolve, reject) => {
+    form.parse(req, (err: Error | null, fields: Fields, files: Files) => {
       if (err) reject(err);
       resolve({fields, files});
     })

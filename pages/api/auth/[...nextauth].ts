@@ -3,7 +3,8 @@ import GoogleProvider from 'next-auth/providers/google'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { mongooseConnect } from '../../../lib/mongoose'
 import { Admin } from '../../../models/Admin'
-import bcrypt from 'bcrypt'
+import bcrypt from 'bcrypt';
+import { NextApiRequest } from 'next';
 
 
 async function checkAdmin(email: string, password: string) {
@@ -16,6 +17,16 @@ async function checkAdmin(email: string, password: string) {
   } else {
     return false
   }
+}
+
+type Credentials = {
+  email: string;
+  password: string;
+}
+type User = {
+  name: string;
+  email: string;
+  image: string;
 }
 
 export default NextAuth({
@@ -31,7 +42,7 @@ export default NextAuth({
     CredentialsProvider({
       type: "credentials",
       credentials: {},
-      async authorize(credentials, req) {
+      async authorize(credentials: Credentials, req: NextApiRequest): Promise<any> {
         
         const {email, password} = credentials;
 

@@ -9,20 +9,24 @@ export default async function handler(req, res) {
   if (method === "GET") {
     if (req.query?.id) {
       res.json(await Product.findOne({_id:req.query.id}).populate('category'))
-    } else if (req.query?.search) {
+    } 
+    else if (req.query?.search) {
       const search = req.query.search;
       const regex = new RegExp(search,'i'); // make case-insensitive query
       res.json(await Product.find({searchQuery: {$regex: regex}}, null, {sort: {'createdAt': -1}}).populate('category'));
-    } else if (req.query?.limit) {
+    } 
+    else if (req.query?.limit) {
       const limit = parseInt(req.query.limit);
       res.json(await Product.find({}, null, {sort: {'createdAt': -1}}).limit(limit).populate('category'));
-    } else if (req.query?.category) {
+    } 
+    else if (req.query?.category) {
       const category = req.query.category;
       const childCategories = await Category.find({parent: category});
       const childCategoriesIds = childCategories.map(cat => cat._id);
       res.json(await Product.find({category: {$in: [...childCategoriesIds, category]}}, null, {sort: {'createdAt': -1}}).populate('category'));
       
-    } else {
+    } 
+    else {
       //TODO add pagination
       res.json(await Product.find({}, null, {sort: {'createdAt': -1}}).limit(20).populate('category'));
     }

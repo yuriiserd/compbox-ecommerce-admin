@@ -1,7 +1,8 @@
+import { NextApiRequest, NextApiResponse } from "next";
 import { mongooseConnect } from "../../lib/mongoose";
 import { Admin } from "../../models/Admin";
 
-export default async function handler(req, res) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   
   await mongooseConnect();
   

@@ -1,9 +1,9 @@
 import '../styles/globals.scss'
 
 import { SessionProvider } from "next-auth/react"
-import { store } from '/stote'
+import { store } from '../stote'
 import { Provider } from 'react-redux'
-import ErrorContextProvider from 'components/ErrorContext'
+import ErrorContextProvider from '../components/ErrorContext'
 
 export default function App({
   Component, pageProps: { session, ...pageProps }

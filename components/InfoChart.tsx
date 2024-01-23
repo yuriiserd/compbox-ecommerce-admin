@@ -80,6 +80,7 @@ export default function InfoChart({period, id, data: initialData, color, bg, lab
             
             scales: {
                 y: {
+                  beginAtZero: true,
                   grid: {
                       color: "#dddfe5",
                   },
@@ -87,24 +88,20 @@ export default function InfoChart({period, id, data: initialData, color, bg, lab
                       color: "#929292",
                       font: {
                           family: "'Mulish', sans-serif",
-                          size: "16px",
+                          size: 16,
                       },
-                      beginAtZero: step === 1 ? true : false,
-                      stepSize: step || false,
+                      stepSize: step,
                   },
                 },
                 x: {
                     grid: {
-                        drawBorder: false,
-                        borderDash: [6],
                         color: "#dddfe5",
-                        border: false,
                     },
                     ticks: {
                         color: "#929292",
                         font: {
                             family: "'Mulish', sans-serif",
-                            size: "16px",
+                            size: 16,
                         },
                     },
                 },

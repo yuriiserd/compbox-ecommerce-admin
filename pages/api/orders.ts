@@ -1,14 +1,20 @@
+import { NextApiRequest, NextApiResponse } from "next";
 import { mongooseConnect } from "../../lib/mongoose";
 import { Customer } from "../../models/Customer";
 import { Order } from "../../models/Order";
 
-export default async function handler(req, res) {
+type Filters = {
+  paid?: boolean,
+  status?: string
+}
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const method = req.method;
   await mongooseConnect();
   if (method === "POST") {
     if (req.body.filters) {
       const {paid, status} = req.body.filters;
-      const filters = {};
+      const filters: Filters = {};
       if (paid !== "All") {
         filters.paid = paid === "Paid" ? true : false;
       }

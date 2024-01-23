@@ -11,10 +11,11 @@ import Spinner from "../components/Spinner";
 import { statusColor } from "../lib/statusColor";
 import ReloadIcon from "../components/icons/ReloadIcon";
 import Dropdown from "../components/Dropdown";
+import { Order } from "../types/order";
 
 export default function Orders() {
 
-   const [orders, setOrders] = useState([]);
+   const [orders, setOrders] = useState<Order[] | []>([]);
    const [noItemsFound, setNoItemsFound] = useState(false)
    const openPopup = useSelector(selectOpenPopupDelete);
    const [loading, setLoading] = useState(false);
@@ -84,7 +85,7 @@ return (
                   {name: 'Paid'},
                   {name: 'Not paid'},
                ]}
-               selectedItem={(item) => {
+               selectedItem={(item: {name: string}) => {
                   setFilters({...filters, paid: item.name})
                }}  
                editable={false}
@@ -98,7 +99,7 @@ return (
                   {name: 'All'},
                   ...Object.keys(statusColor).map(item => ({name: item}))
                ]}
-               selectedItem={(item) => {
+               selectedItem={(item: {name: string}) => {
                   setFilters({...filters, status: item.name})
                }}
                editable={false}

@@ -1,11 +1,11 @@
-import Dropdown from "/components/Dropdown";
-import { ErrorContext } from "/components/ErrorContext";
-import Layout from "/components/Layout";
-import Spinner from "/components/Spinner";
-import DeleteIcon from "/components/icons/DeleteIcon";
-import ReloadIcon from "/components/icons/ReloadIcon";
-import StarIcon from "/components/icons/StarIcon";
-import useAdminRole from "/hooks/useAdminRole";
+import Dropdown from "../../components/Dropdown";
+import { ErrorContext } from "../../components/ErrorContext";
+import Layout from "../../components/Layout";
+import Spinner from "../../components/Spinner";
+import DeleteIcon from "../../components/icons/DeleteIcon";
+import ReloadIcon from "../../components/icons/ReloadIcon";
+import StarIcon from "../../components/icons/StarIcon";
+import useAdminRole from "../../hooks/useAdminRole";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
@@ -138,7 +138,7 @@ export default function ReviewsPage() {
         <Dropdown
           items={statuses}
           initialItem={status}
-          selectedItem={async (status) => setStatus(status)}
+          selectedItem={async (status: string) => setStatus(status)}
           editable={false}
         />
       </div>

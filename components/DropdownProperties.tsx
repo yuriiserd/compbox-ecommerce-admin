@@ -2,6 +2,12 @@ import classNames from "classnames";
 import { set } from "mongoose";
 import { useEffect, useState } from "react";
 
+type DropdownPropertiesProps = {
+  items: string[];
+  selectedItem: (item: string) => void;
+  initialItem: string;
+}
+
 export default function DropdownProperties(props) {
 
   const [isVisibleDropdown, setIsVisibleDropdown] = useState(false);

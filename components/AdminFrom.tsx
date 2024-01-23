@@ -119,6 +119,13 @@ export default function AdminForm({ adminId, setShowForm }: AdminFormProps) {
     return hashedPassword;
   }
 
+  function selectRole(role) {
+    setAdmin(prev => ({
+      ...prev,
+      role
+    }))
+  }
+
   return (
     <form onSubmit={saveAdmin}>
       <div className="mb-4">
@@ -176,10 +183,7 @@ export default function AdminForm({ adminId, setShowForm }: AdminFormProps) {
                 "Viewer"
               ]}
               initialItem={admin?.role}
-              selectedItem={(item) => setAdmin(prev => ({
-                ...prev,
-                role: item
-              }))}
+              selectedItem={(item) => selectRole(item)}
             />
           </div>
         </div>

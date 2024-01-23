@@ -7,9 +7,13 @@ import Loading from "./Loading";
 import { useSession } from "next-auth/react";
 import { ErrorContext } from "./ErrorContext";
 import useAdminRole from "../hooks/useAdminRole";
+import { Product } from "../types/product";
+import { Category } from "../types/category";
+import { Order } from "../types/order";
+import { Admin } from "../types/admin";
 
 
-export default function DeletePopup({collection}) {
+export default function DeletePopup({collection}: {collection: string}) {
 
   const itemId = useSelector(selectItemIdDelete);
   const openPopup = useSelector(selectOpenPopupDelete);
@@ -18,7 +22,7 @@ export default function DeletePopup({collection}) {
     done: false
   });
   const dispatch = useDispatch();
-  const [currentItem, setcurrentItem] = useState([]);
+  const [currentItem, setcurrentItem] = useState<Product | Category | Order | Admin | null>(null);
 
   const {data: session} = useSession();
   const {setErrorMessage, setShowError} = useContext(ErrorContext);
@@ -31,7 +35,7 @@ export default function DeletePopup({collection}) {
     }
   },[openPopup])
 
-  async function deleteItem(id) {
+  async function deleteItem(id: string) {
 
     const role = await useAdminRole(session?.user?.email);
     if (role !== 'Admin') {
@@ -71,12 +75,18 @@ export default function DeletePopup({collection}) {
 
   const deleteMessage = () => {
     if (collection === "categories") {
-      return currentItem?.name
-    } else if (collection === "orders") {
-      return 'this order'
-    } else if (collection === "products") {
-      return currentItem?.title
-    } else {
+      return (currentItem as Category)?.name
+    } 
+    else if (collection === "orders") {
+      return 'order ' + currentItem?._id
+    } 
+    else if (collection === "products") {
+      return (currentItem as Product)?.title
+    } 
+    else if (collection === "admins") {
+      return (currentItem as Admin)?.name
+    } 
+    else {
       return 'this item'
     }
   }
@@ -110,7 +120,7 @@ export default function DeletePopup({collection}) {
                 <button className="btn" onClick={() => {
                   dispatch(closeDelete());
                   setTimeout(() => {
-                    setcurrentItem([])
+                    setcurrentItem(null)
                   }, 300) // timeout to remove Item after popup close
                 }}>No</button>
               </div>

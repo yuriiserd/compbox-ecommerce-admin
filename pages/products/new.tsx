@@ -1,7 +1,7 @@
 
-import Layout from "/components/Layout";
-import ProductForm from "/components/ProductForm";
-import Back from "/components/Back";
+import Layout from "../../components/Layout";
+import ProductForm from "../../components/ProductForm";
+import Back from "../../components/Back";
 
 export default function NewProduct() {
   return (

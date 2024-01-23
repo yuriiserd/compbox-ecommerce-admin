@@ -12,18 +12,22 @@ import Dropdown from "./Dropdown";
 import useAdminRole from "../hooks/useAdminRole";
 import { useSession } from "next-auth/react";
 import { ErrorContext } from "./ErrorContext";
+import { Order } from "../types/order";
+import { Product } from "../types/product";
 
-interface OrderFormProps {
-  _id: string;
-  address: string;
-  city: string;
-  country: string;
-  email: string;
-  name: string;
-  product_items: any[];
-  zip: string;
-  status: string;
+type ProductItem = {
+  quantity: number,
+  price_data: {
+    currency: string,
+    product_data: {
+      id: string,
+      images?: string[],
+      name: string
+    },
+    unit_amount: number
+  }
 }
+type ProductItems = ProductItem[];
 
 export default function OrderForm({
   _id,
@@ -35,16 +39,16 @@ export default function OrderForm({
   product_items: existingProducts, 
   zip: existingZip,
   status: existingStatus,
-}: OrderFormProps) {
+}: Order) {
 
   const [address, setAddress] = useState(existingAddress || '');
   const [city, setCity] = useState(existingCity || '');
   const [country, setCountry] = useState(existingCountry || '');
   const [email, setEmail] = useState(existingEmail || '');
   const [name, setName] = useState(existingName || '');
-  const [products, setProducts] = useState(existingProducts || []);
+  const [products, setProducts] = useState<ProductItems | []>(existingProducts || []);
   const [zip, setZip] = useState(existingZip || '');
-  const [status, setStatus] = useState(existingStatus || 'Processing');
+  const [status, setStatus] = useState<string>(existingStatus || 'Processing');
 
   const statusOptions = ['Pending', 'Processing', 'Backordered', 'On Hold', 'Delivered', 'Cancelled', 'Completed'];
 
@@ -89,7 +93,7 @@ export default function OrderForm({
     searchProducts(searchValue);
   },[searchValue])
   
-  function searchProducts(search) {
+  function searchProducts(search: string) {
 
     clearTimeout(timeoutSearch);
     setTimeoutSearch(setTimeout(() => {
@@ -105,7 +109,7 @@ export default function OrderForm({
     
   }
 
-  async function saveOrder(e) {
+  async function saveOrder(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
     e.preventDefault();
 
     const role = await useAdminRole(session?.user?.email); 
@@ -131,13 +135,13 @@ export default function OrderForm({
 
   function updateTotalPrice() {
     setTotalPrice(0)
-    products.forEach(product => {
+    products.forEach((product: ProductItem) => {
       setTotalPrice(price => price + (product.quantity * product.price_data.unit_amount / 100))
     })
   }
   function updateProductsIds() {
     setProductsIds({});
-    products.forEach(product => {
+    products.forEach((product: ProductItem) => {
       const productId = product.price_data.product_data.id;
       setProductsIds(ids => {
         return {
@@ -149,13 +153,13 @@ export default function OrderForm({
   }
 
   //quantity functions
-  function decreaseQuantity(currentProduct) {
+  function decreaseQuantity(currentProduct: ProductItem) {
     if (currentProduct.quantity === 1) return;
     setProducts(products => {
-      return products.map(product => {
+      return products.map((product: ProductItem) => {
         if (product.price_data.product_data.id === currentProduct.price_data.product_data.id ) {
           if (product.quantity !== 1) {
-            return {...product, quantity: parseInt(product.quantity) - 1}
+            return {...product, quantity: product.quantity - 1}
           }
         } else {
           return product
@@ -163,29 +167,29 @@ export default function OrderForm({
       })
     })
   }
-  function increaseQuantity(currentProduct) {
+  function increaseQuantity(currentProduct: ProductItem) {
     setProducts(products => {
-      return products.map(product => {
+      return products.map((product: ProductItem) => {
         if (product.price_data.product_data.id === currentProduct.price_data.product_data.id ) {
-          return {...product, quantity: parseInt(product.quantity) + 1}
+          return {...product, quantity: product.quantity + 1}
         } else {
           return product
         }
       })
     })
   }
-  function changeQuantity(currentProduct, newQuantity) {
+  function changeQuantity(currentProduct: ProductItem, newQuantity: string) {
+
+    let newQuantityNumber = parseInt(newQuantity);
     
     if (newQuantity.length === 0) {
-      newQuantity = 1;
+      newQuantityNumber = 1;
     }
-    
-    newQuantity = parseInt(newQuantity);
 
     setProducts(products => {
-      return products.map(product => {
+      return products.map((product: ProductItem) => {
         if (product.price_data.product_data.id === currentProduct.price_data.product_data.id ) {
-          return {...product, quantity: newQuantity}
+          return {...product, quantity: newQuantityNumber}
         } else {
           return product
         }
@@ -194,9 +198,9 @@ export default function OrderForm({
   }
   //quantity functions - END
 
-  function deleteProduct(id) {
+  function deleteProduct(id: string) {
     setProducts(products => {
-      return products.filter(product => product.price_data.product_data.id !== id)
+      return products.filter((product: ProductItem) => product.price_data.product_data.id !== id)
     })
   }
 
@@ -221,12 +225,12 @@ export default function OrderForm({
     });
     setRequestInProgress(false)
   }
-  async function addProduct(productToAdd) {
+  async function addProduct(productToAdd: Product) {
     setProducts(products => {
       const updatedProducts = [];
       let notFound = true;
       
-      products.forEach(product => {
+      products.forEach((product: ProductItem) => {
 
         if (product.price_data.product_data.id === productToAdd._id) {
           updatedProducts.push({
@@ -265,7 +269,7 @@ export default function OrderForm({
             <Dropdown 
               items={statusOptions}
               initialItem={status}
-              selectedItem={(item) => setStatus(item)}
+              selectedItem={(item: string) => setStatus(item)}
             />
           </div>
           <h3 className="text-xl mb-4 mt-4">Customer details</h3>
