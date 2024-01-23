@@ -5,7 +5,7 @@ export type Admin = {
   role: string;
   photo: string;
   password: string;
-  createdAt: Date;
-  updatedAt: Date;
-  lastLogin: Date | null;
+  createdAt?: Date;
+  updatedAt?: Date;
+  lastLogin?: Date | '' | null;
 }

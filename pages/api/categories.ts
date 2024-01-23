@@ -1,7 +1,9 @@
 import { Category } from "../../models/Category";
 import { mongooseConnect } from "../../lib/mongoose";
+import { NextApiRequest, NextApiResponse } from "next";
+import { parseArgs } from "util";
 
-export default async function handler(req, res) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
 
   const {method} = req;
   await mongooseConnect();
@@ -36,11 +38,18 @@ export default async function handler(req, res) {
  
   if (method === 'PUT') {
     if (req.query?.many) {
-      const categories = req.body;
-      categories.forEach(async (category) => {
+      const {categories} = req.body;
+      const updateOperations = categories.map((category: {_id: string, order: number}) => {
         const {_id, order} = category;
-        await Category.updateOne({_id}, {order})
-       })
+        return {
+          updateOne: {
+            filter: {_id},
+            update: { $set: {order}}
+          }
+        }
+      })
+      console.log("-------")
+      await Category.bulkWrite(updateOperations);
       res.json(true);
     } else {
       const {name, image, parent, properties, _id} = req.body;

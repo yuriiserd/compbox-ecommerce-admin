@@ -2,11 +2,18 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import DeleteIcon from "./icons/DeleteIcon";
 import Spinner from "./Spinner";
+import { Coupon } from "../types/coupon";
+
+type InitialCoupon = {
+  name: string;
+  percent_off: number;
+  duration_in_months: number;
+}
 
 export default function Coupons({setSaved}) {
 
-  const [coupons, setCoupons] = useState([]);
-  const [coupon, setCoupon] = useState({});
+  const [coupons, setCoupons] = useState<Coupon[] | []>([]);
+  const [coupon, setCoupon] = useState<InitialCoupon | null>(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -35,17 +42,19 @@ export default function Coupons({setSaved}) {
     }
   }
   // update coupon in state
-  function updateCoupon(field, value, type = 'string') {
+  function updateCoupon(field: string, value: string, type = 'string') {
       const newCoupon = {...coupon};
+      if (value !== '') {
+
+      }
       if (type === 'number') {
-        if (value !== '') {
-            value = parseInt(value);
-        }
+        newCoupon[field] = parseInt(value);
+      } else {
+        newCoupon[field] = value;
       };
-      newCoupon[field] = value;
       setCoupon(newCoupon);
   }
-  function deleteCoupon(id) {
+  function deleteCoupon(id: string) {
       if (id) {
         axios.delete('/api/coupons?id='+id).then(res => {
             console.log(res.data)
@@ -95,7 +104,7 @@ export default function Coupons({setSaved}) {
                 </div>
                 <div className="relative w-[10%]"></div>
             </div>
-            {coupons.map((coupon, index) => (
+            {coupons.map((coupon: Coupon, index: number) => (
                 <div className="flex gap-4 border-b border-r border-l px-4 " key={index}>
                   <div className="relative w-[40%] border-r py-2">
                       {coupon?.name || ''}

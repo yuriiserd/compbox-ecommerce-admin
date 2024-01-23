@@ -1,9 +1,9 @@
-import Layout from "/components/Layout";
+import Layout from "../../../components/Layout";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import OrderForm from "/components/OrderForm";
-import Back from "/components/Back";
+import OrderForm from "../../../components/OrderForm";
+import Back from "../../../components/Back";
 
 export default function EditOrderPage() {
   const [orderInfo, setOrderInfo] = useState(null);

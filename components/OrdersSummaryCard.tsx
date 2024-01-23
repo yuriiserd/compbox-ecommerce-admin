@@ -1,4 +1,4 @@
-import useProductTotal from "/hooks/useProductTotal";
+import useProductTotal from "../hooks/useProductTotal";
 import { useEffect, useState } from "react";
 
 export default function OrdersSummaryCard({orders, period}) {

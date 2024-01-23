@@ -10,7 +10,14 @@ import DropdownProperties from "./DropdownProperties";
 import { DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { useSession } from "next-auth/react";
 import { ErrorContext } from "./ErrorContext";
-import useAdminRole from "/hooks/useAdminRole";
+import useAdminRole from "../hooks/useAdminRole";
+import { Product } from "../types/product";
+
+type Property = {
+  _id: string;
+  name: string;
+  values: string[];
+}
 
 
 export default function ProductForm({
@@ -23,10 +30,10 @@ export default function ProductForm({
   salePrice: existingSalePrice,
   images: existingImages,
   properties: existingProperties
-}) {
+}: Product) {
 
   const [title, setTitle] = useState(existingTitle || '');
-  const [category, setCategory] = useState(existingCategory || {name: ''});
+  const [category, setCategory] = useState(existingCategory || null);
   const [description, setDescription] = useState(existingDescription || '');
   const [content, setContent] = useState(existingContent || '');
   const [price, setPrice] = useState(existingPrice || '');
@@ -50,12 +57,14 @@ export default function ProductForm({
     axios.get('/api/categories').then(res => {
       setCategories(res.data);
     });
-    if (category.name.length > 0) {
-      getPropertiesToShow()
+    if (typeof(category) !== "string") {
+      if (category?._id) {
+        getPropertiesToShow()
+      }
     }
   }, [category]);
 
-  async function saveProduct(e) {
+  async function saveProduct(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     const role = await useAdminRole(session?.user?.email);
@@ -104,12 +113,12 @@ export default function ProductForm({
     }
   }
 
-  function updateImagesOrder(images) {
-    images = images.map(image => image.toString());
-    setImages(images);
+  function updateImagesOrder(newImages : string[]) {
+    newImages = newImages.map(image => image.toString());
+    setImages(newImages);
   }
 
-  async function deleteImage(deleteLink) {
+  async function deleteImage(deleteLink: string) {
 
     const deleteKey = deleteLink.split('/').pop();
     // TODO delete image from s3 bucked
@@ -128,17 +137,21 @@ export default function ProductForm({
   }
 
   async function getPropertiesToShow() {
-
+    // Clear the existing properties to show
     setPropertiesToShow([]);
 
     let haveParent = true;
     let categoryCheck = category;
+    console.log(categoryCheck)
+    // If the category is a string, return early
+    if (typeof(categoryCheck) === "string") return
+    // If the category has a parent, get the parent and add the properties to the properties to show
     while (haveParent) {
       if (categoryCheck.parent) {
         const id = typeof(categoryCheck.parent) === "string" ? categoryCheck.parent : categoryCheck.parent._id;
         await axios.get('/api/categories?id=' + id).then(res => {
           setPropertiesToShow(old => {
-            return [...old, ...res.data.properties]
+            return [...res.data.properties, ...old]
           });
           categoryCheck = res.data;
         })
@@ -148,13 +161,12 @@ export default function ProductForm({
     }
 
     setPropertiesToShow(old => {
-      return [...old, ...category.properties].filter((a,b) => {
-        return a._id !== b._id
-      })
+      if (typeof(category) === "string") return old;
+      return [...old, ...category?.properties]
     });
 
   }
-  const properties = propertiesToShow.map((property, index) => {
+  const properties = propertiesToShow.map((property: Property, index) => {
     let initialValue = '';
     Object.keys(productProperties).forEach(key => {
       if (key === property.name) {
@@ -171,7 +183,7 @@ export default function ProductForm({
           <DropdownProperties 
             items={property.values.sort()} 
             initialItem={initialValue}
-            selectedItem={(item) => setProductProperties(old => {
+            selectedItem={(item: string) => setProductProperties(old => {
               return {...old, [propertyName]: item}
             })}
             className="w-full"
@@ -194,19 +206,19 @@ export default function ProductForm({
             />
           <label className="mb-4 w-full relative">
             <span className="mb-2 block">Category</span>
-            
-            <Dropdown 
-              items={categories} 
-              initialItem={category.name || {name : 'Select Category'}}
-              selectedItem={setCategory}/>
+            {typeof(category) !== "string" && (
+              <Dropdown 
+                items={categories} 
+                initialItem={category?.name ? category.name : {name : 'Select Category'}}
+                selectedItem={setCategory}/>
+            )}
           </label>
           {!!propertiesToShow.length && (
             <span className="mb-2 block">Properties</span>
           )}
           {properties}
           <label>Description</label>
-          <textarea 
-            type="text" 
+          <textarea  
             placeholder="Description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
@@ -247,8 +259,8 @@ export default function ProductForm({
               <ReactSortable
                 className="flex flex-wrap gap-2"
                 animation={200}
-                list={images}
-                setList={updateImagesOrder}
+                list={images.map((image, index) => ({id: index, image}))}
+                setList={newList => updateImagesOrder(newList.map(item => item.image))}
               >
                 {images.map(link => (
                   <div key={link} className="image-preview">

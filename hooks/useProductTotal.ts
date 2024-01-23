@@ -1,4 +1,11 @@
-export default function useProductTotal(product_items, coupon_percent_off) {
+type ProductItem = {
+  quantity: number;
+  price_data: {
+    unit_amount: number;
+  };
+}
+
+export default function useProductTotal(product_items: ProductItem[], coupon_percent_off: number) {
   
   let total = 0;
 

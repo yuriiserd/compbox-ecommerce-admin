@@ -12,7 +12,7 @@ export default function Search({setProducts, setNoItemsFound}) {
 
   // timeout for search optimization
   // reduce server requests
-  function searchProducts(search) {
+  function searchProducts(search: string) {
     clearTimeout(timeoutSearch);
     setTimeoutSearch(setTimeout(() => {
       axios.get('/api/products?search='+search).then(response => {

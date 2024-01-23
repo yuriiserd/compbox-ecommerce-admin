@@ -6,8 +6,8 @@ import axios from "axios";
 import { useEffect, useMemo, useState } from "react";
 import ReactDatePicker, { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { Order } from "./types/order";
-import { Customer } from "./types/customer";
+import { Order } from "../types/order";
+import { Customer } from "../types/customer";
 // import uk from 'date-fns/locale/uk';
 
 // registerLocale('uk', uk);

@@ -8,15 +8,16 @@ import { openDelete, selectOpenPopupDelete, setDeleteItem } from "../slices/dele
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Admin } from "../types/admin";
 
 
 export default function Admins() {
 
    const [loading, setLoading] = useState(false);
-   const [admins, setAdmins] = useState([]);
-   const [adminId, setAdminId] = useState(null);
+   const [admins, setAdmins] = useState<Admin[] | []>([]);
+   const [adminId, setAdminId] = useState<string | null>(null);
    const [showForm, setShowForm] = useState(false);
-   const [error, setError] = useState(null);
+   const [error, setError] = useState<string | null>(null);
 
    const openPopup = useSelector(selectOpenPopupDelete);
 

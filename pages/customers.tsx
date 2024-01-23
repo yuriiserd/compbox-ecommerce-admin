@@ -1,13 +1,14 @@
-import Layout from "/components/Layout";
-import Spinner from "/components/Spinner";
+import Layout from "../components/Layout";
+import Spinner from "../components/Spinner";
 import axios from "axios";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { statusColor } from "/lib/statusColor";
+import { statusColor } from "../lib/statusColor";
+import { Customer } from "../types/customer";
 
 export default function Customers() {
 
-  const [customers, setCustomers] = useState([]);
+  const [customers, setCustomers] = useState<Customer[] | []>([]);
   const [loading, setLoading] = useState(false);
   const [showMoreOrders, setShowMoreOrders] = useState(false);
 

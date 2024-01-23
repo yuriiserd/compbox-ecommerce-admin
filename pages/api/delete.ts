@@ -1,8 +1,9 @@
 import { DeleteObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { NextApiRequest, NextApiResponse } from 'next';
 
 const bucketName = process.env.S3_BUCKET_NAME;
 
-export default async function handler(req, res) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
 
   const file = req.query + '';
 
@@ -22,7 +23,7 @@ export default async function handler(req, res) {
   
   try {
     const res = await client.send(command);
-    res.json(res);
+    // res.json(res);
   } catch(err) {
     res.json(err);
   }

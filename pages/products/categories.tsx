@@ -1,30 +1,35 @@
-import Layout from "/components/Layout";
+import Layout from "../../components/Layout";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
-import Back from "/components/Back";
-import Spinner from "/components/Spinner";
-import Error from "/components/Error";
-import DeletePopup from "/components/DeletePopup";
-import Dropdown from "/components/Dropdown";
-import { openDelete, setDeleteItem, selectOpenPopupDelete } from "/slices/deleteSlice";
+import Back from "../../components/Back";
+import Spinner from "../../components/Spinner";
+import Error from "../../components/Error";
+import DeletePopup from "../../components/DeletePopup";
+import Dropdown from "../../components/Dropdown";
+import { openDelete, setDeleteItem, selectOpenPopupDelete } from "../../slices/deleteSlice";
 import { useDispatch, useSelector } from "react-redux";
-import DeleteIcon from "/components/icons/DeleteIcon";
-import EditIcon from "/components/icons/EditIcon";
-import { ReactSortable } from "react-sortablejs";
+import DeleteIcon from "../../components/icons/DeleteIcon";
+import EditIcon from "../../components/icons/EditIcon";
+import { ItemInterface, ReactSortable } from "react-sortablejs";
 import Image from "next/image";
+import { Category } from "../../types/category";
 
+type Property = {
+  name: string;
+  values: string[];
+}
 
 export default function Categories() {
 
   const [name, setName] = useState('');
   const [image, setImage] = useState('');
-  const [parent, setParent] = useState({});
+  const [parent, setParent] = useState<Category | null>(null);
 
   const [nameError, setNameError] = useState(false);
   const [noItemsFound, setNoItemsFound] = useState(false);
   
-  const [categories, setCategories] = useState([]);
-  const [properties, setProperties] = useState([]);
+  const [categories, setCategories] = useState<Category[] | []>([]);
+  const [properties, setProperties] = useState<Property[] | []>([]);
 
   const [isEditing, setIsEditing] = useState(false);
   const [editItem, setEditItem] = useState('');
@@ -38,10 +43,16 @@ export default function Categories() {
     updateCategories();
   }, [openPopup, noItemsFound])
 
+  useEffect(() => {
+    if (categories.length !== 0) {
+      updateCategoriesOrderDB()
+    }
+  }, [categories])
+
   function updateCategories() {
     axios.get('/api/categories').then(res => {
       const categories = res.data;
-      categories.sort((a, b) => {
+      categories.sort((a: Category, b: Category) => {
         return a.order - b.order;
       });
       setCategories(categories);
@@ -53,24 +64,11 @@ export default function Categories() {
     })
   }
 
-  function updateCategoriesOrderDB() {
+  
 
-    setCategories(categories => {
-      const newCat = categories;
-      newCat.forEach((cat, index) => {
-        cat.order = index
-      })
-      return newCat;
-    })
-    setTimeout(async () => {
-      await axios.put('/api/categories?many=true', categories);
-    }, 1000)
-
-  }
-
-  function validateCat(target) {
+  function validateCat(target: string) {
     let bool = true;
-    categories.forEach(cat => {
+    categories.forEach((cat: Category)=> {
       if (cat.name !== target) {
         bool = false
       }
@@ -79,16 +77,14 @@ export default function Categories() {
   }
 
   function validateError() {
-
     validateCat(name) || name === '' ? setNameError(true) : setNameError(false);
-  
   }
 
-  function editCategory(category) {
+  function editCategory(category: Category) {
     categoryFormRef.current.scrollIntoView();
     setName(category.name);
     setImage(category.image || '');
-    setParent(category.parent || {});
+    setParent(category?.parent as Category || null);
     setProperties(category.properties || []);
     setIsEditing(true);
     setEditItem(category._id);
@@ -100,7 +96,7 @@ export default function Categories() {
     })
   }
 
-  function deleteProperty(index) {
+  function deleteProperty(index: number) {
     setProperties((old) => {
       const newProperties = [...old];
       return newProperties.filter((property, propertyIndex) => propertyIndex !== index)
@@ -110,12 +106,12 @@ export default function Categories() {
   function cancelEdit() {
     setName('');
     setImage('')
-    setParent('');
+    setParent(null);
     setProperties([]);
     setIsEditing(false);
   }
   
-  function addPropertyName(name, index) {
+  function addPropertyName(name: string, index: number) {
     setProperties((old) => {
       const newProperties = [...old];
       newProperties[index].name = name;
@@ -123,7 +119,7 @@ export default function Categories() {
     })
   }
 
-  function addPropertyValues(values, index) {
+  function addPropertyValues(values, index: number) {
     setProperties((old) => {
       const newProperties = [...old];
       newProperties[index].values = values.split(',');
@@ -131,12 +127,19 @@ export default function Categories() {
     })
   }
 
-  function updateCategoriesOrder(categories) {
-    setCategories(categories);
-    updateCategoriesOrderDB()
+  function updateCategoriesOrder(newList: Category[]) {
+    setCategories(newList);
+  }
+
+  async function updateCategoriesOrderDB() {
+    const newOrderCategories = categories.map((category: Category, index: number) => {
+      return {_id: category._id, order: index}
+    })
+    await axios.put('/api/categories?many=true', {categories: newOrderCategories});
   }
 
   async function saveCategory() {
+
     if (validateCat(name) && !validateCat(parent.name)) return;
     if (name === '') return;
     const data = {name, image, parent: {}, properties: []};
@@ -145,9 +148,9 @@ export default function Categories() {
 
     if (properties.length > 0) {
       const trimedUniqueProperties = properties;
-      trimedUniqueProperties.forEach(property => {
+      trimedUniqueProperties.forEach((property: Property) => {
         property.values = property.values.map(value => value.trimStart().trimEnd()) // trim
-        property.values = [...new Set(property.values)] // remove duplicates
+        property.values = Array.from(new Set(property.values)) // remove duplicates
       });
       data.properties = trimedUniqueProperties;
     }
@@ -160,7 +163,7 @@ export default function Categories() {
 
     setName('');
     setImage('');
-    setParent({});
+    setParent(null);
     setProperties([]);
     updateCategories();
     setIsEditing(false);
@@ -248,7 +251,7 @@ export default function Categories() {
 
               <Dropdown 
                 items={categories} 
-                initialItem={parent.name || 'Select parent category'}
+                initialItem={parent?.name || 'Select parent category'}
                 selectedItem={setParent}/>
             </label>
             <div className="w-full relative flex flex-wrap justify-between">
@@ -260,7 +263,7 @@ export default function Categories() {
                 onClick={addProperty}
               >Add property</button>
 
-              {!!properties.length && properties.map((property, index) => (
+              {!!properties.length && properties.map((property: Property, index: number) => (
                 <div key={index} className="flex flex-wrap sm:flex-nowrap mt-2 gap-2 mb-2 items-center w-full">
                   <input 
                     className="w-full block mr-0 mb-0"
@@ -320,7 +323,7 @@ export default function Categories() {
               )}
               <ReactSortable
                 animation={200}
-                list={categories}
+                list={categories.map((category) => ({...category, _id: category._id}))}
                 setList={updateCategoriesOrder}
               >
                 {categories.map((category) => (

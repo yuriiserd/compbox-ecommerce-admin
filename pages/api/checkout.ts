@@ -1,9 +1,10 @@
+import { NextApiRequest, NextApiResponse } from "next";
 import { mongooseConnect } from "../../lib/mongoose";
 import { Order } from "../../models/Order";
 import { Product } from "../../models/Product";
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
-export default async function handler(req, res) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
     res.json('should be a POST request');
     return
@@ -47,7 +48,7 @@ export default async function handler(req, res) {
       })
     }
   }
-  let orderDoc = {};
+  let orderDoc = {_id: null};
   if (_id) {
     orderDoc = await Order.updateOne({_id},{
       product_items, 

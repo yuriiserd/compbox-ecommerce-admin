@@ -1,8 +1,9 @@
+import { NextApiRequest, NextApiResponse } from "next";
 import { mongooseConnect } from "../../lib/mongoose";
 import { Customer } from "../../models/Customer";
 import { Order } from "../../models/Order";
 
-export default async function handler(req, res) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   await mongooseConnect();
   if (req.method === 'POST') {
     const {period} = req.body;
