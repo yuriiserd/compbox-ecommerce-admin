@@ -1,4 +1,5 @@
-const { model, models, Schema } = require("mongoose")
+const { model, models, Schema } = require("mongoose");
+import "./Order";
 
 const CustomerSchema = new Schema({
   name: {type: String, required: true},
