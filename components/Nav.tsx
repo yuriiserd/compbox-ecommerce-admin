@@ -34,7 +34,7 @@ export default function Nav() {
           <span></span>
         </button>
       <Link href={'/'} className="flex items-center py-5 gap-4 flex-col">
-        <Image src={logo} width={55} height={55} alt="logo"/>
+        <Image src={logo} width={140} height={55} alt="logo"/>
         {/* <small className="text-xs text-center"></small> */}
       </Link>
       <nav>
